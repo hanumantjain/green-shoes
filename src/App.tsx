@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Home } from "./UserPages/Home";
 import { NotFound } from "./components/NotFound";
+import { Contact } from "./UserPages/Contact";
 
 
 function App() {
@@ -8,8 +9,9 @@ function App() {
     <div>
       <BrowserRouter>
         <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/*' element={<NotFound />}/>
+          <Route path='/' element={<Home />} />
+          <Route path='/contact' element={<Contact />} />
+          <Route path='/*' element={<NotFound />}/>
         </Routes>
       </BrowserRouter>
     </div>
