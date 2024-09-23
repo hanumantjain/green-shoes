@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useActionData } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Home } from "./UserPages/Home";
 import { NotFound } from "./components/NotFound";
 import { Contact } from "./UserPages/Contact";
