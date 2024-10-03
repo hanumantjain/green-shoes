@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FormEvent, FormEventHandler, useState } from 'react'
+import React, { ChangeEvent, FormEvent, useState } from 'react'
 import view from '../assets/view.png'
 import hide from '../assets/hide.png'
 import axios from 'axios'
@@ -20,7 +20,9 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
         try{
             const response = await axios.post(`${backendBaseUrl}/admin`, { username, password })
             console.log(response)
-            onLogin(true)
+            if(response.status === 200){
+                onLogin(true)
+            }
             setResultMessage(response.data.message)
         }catch (error: any) {
             setResultMessage(error.response.data.message)

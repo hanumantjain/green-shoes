@@ -1,35 +1,35 @@
-import React, { useState, FormEvent } from 'react';
-import axios, { AxiosError } from 'axios';
+import React, { useState, FormEvent } from 'react'
+import axios, { AxiosError } from 'axios'
 
 const AddAdmin: React.FC = () => {
-    const [name, setName] = useState<string>('');
-    const [username, setUsername] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
-    const [message, setMessage] = useState<string>('');
-    const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL;
+    const [name, setName] = useState<string>('')
+    const [username, setUsername] = useState<string>('')
+    const [password, setPassword] = useState<string>('')
+    const [message, setMessage] = useState<string>('')
+    const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL
 
     const handleSubmit = async (e: FormEvent) => {
-        e.preventDefault();
-        setMessage('');
+        e.preventDefault()
+        setMessage('')
         try {
             const response = await axios.post(`${backendBaseUrl}/adminHome`, {
                 name,
                 username,
                 password
-            });
-            setMessage(response.data.message);
+            })
+            setMessage(response.data.message)
         } catch (error) {
             const axiosError = error as AxiosError<{ message: string }>;
             if (axiosError.response) {
-                setMessage(axiosError.response.data.message);
+                setMessage(axiosError.response.data.message)
             } else {
-                setMessage('An error occurred');
+                setMessage('An error occurred')
             }
         }
-        setName('');
-        setUsername('');
-        setPassword('');
-    };
+        setName('')
+        setUsername('')
+        setPassword('')
+    }
 
     return (
         <div className="">

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-export const Navbar = () => {
+export const Navbar:React.FC = () => {
   return (
     <div className='h-[93px] bg-white flex'>
         <div className='w-full flex items-center justify-around'>

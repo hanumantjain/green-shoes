@@ -2,7 +2,7 @@ import React from 'react'
 import { Navbar } from '../UserComponents/Navbar'
 import img from '../assets/shoe.svg'
 
-export const Home = () => {
+export const Home:React.FC = () => {
   return (
     <div>
         <div className='h-screen bg-[#E1C8A9] flex flex-col '>
