@@ -14,8 +14,9 @@ export const Navbar:React.FC = () => {
                 <Link to='/' className='text-[19px] font-medium'>Products</Link>
                 <Link to='/' className='text-[19px] font-medium'>Contact</Link>
             </div>
-            <div>
-                Cart
+            <div className='flex gap-5'>
+                <Link to='/userSignIn' className='text-[19px] font-medium'>Login/SignUp</Link>
+                <Link to='/' className='text-[19px] font-medium'>Cart</Link>
             </div>
         </div>
     </div>

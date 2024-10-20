@@ -18,6 +18,9 @@ const AddAdmin: React.FC = () => {
                 password
             })
             setMessage(response.data.message)
+            setName('')
+            setUsername('')
+            setPassword('')
         } catch (error) {
             const axiosError = error as AxiosError<{ message: string }>;
             if (axiosError.response) {
@@ -26,9 +29,6 @@ const AddAdmin: React.FC = () => {
                 setMessage('An error occurred')
             }
         }
-        setName('')
-        setUsername('')
-        setPassword('')
     }
 
     return (

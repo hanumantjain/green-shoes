@@ -7,6 +7,9 @@ import { useState , useEffect } from "react"
 import AdminHome from "./AdminPages/AdminHome"
 import { AdminPrivateRoute } from "./AdminComponents/AdminPrivateRoute"
 import { LandingPage } from "./UserPages/LandingPage"
+import { SignIn } from "./UserPages/SignIn"
+import UserSignUp from "./UserPages/UserSignUp"
+import { UserPassword } from "./UserPages/UserPassword"
 
 
 const App: React.FC = () => {
@@ -40,7 +43,10 @@ const App: React.FC = () => {
           {/* User Routes */}
           <Route path='/' element={<Home />} />
           <Route path='/contact' element={<Contact />} />
-          <Route path='/shop' element={<LandingPage/>}/>
+          <Route path='/user1' element={<LandingPage/>}/>
+          <Route path='/userSignIn' element={<SignIn/>}/>
+          <Route path='/userSignUp' element={<UserSignUp/>}/>
+          <Route path='/userPassword' element={<UserPassword/>}/>
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLogin onLogin={handleAdminLogIn} />}/>
