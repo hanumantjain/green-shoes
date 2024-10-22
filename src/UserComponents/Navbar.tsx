@@ -10,8 +10,8 @@ export const Navbar:React.FC = () => {
             </div>
             <div className='flex gap-10 '>
                 <Link to='/' className='text-[19px] font-medium'>Home</Link>
-                <Link to='/' className='text-[19px] font-medium'>Shop</Link>
-                <Link to='/' className='text-[19px] font-medium'>Products</Link>
+                <Link to='/' className='text-[19px] font-medium'>About</Link>
+                <Link to='/products' className='text-[19px] font-medium'>Products</Link>
                 <Link to='/' className='text-[19px] font-medium'>Contact</Link>
             </div>
             <div className='flex gap-5'>

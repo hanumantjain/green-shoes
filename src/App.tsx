@@ -10,6 +10,9 @@ import { LandingPage } from "./UserPages/LandingPage"
 import { SignIn } from "./UserPages/SignIn"
 import UserSignUp from "./UserPages/UserSignUp"
 import { UserPassword } from "./UserPages/UserPassword"
+import FirstPage from "./UserPages/FirstPage"
+import Products from "./UserPages/Products"
+import ProductDetails from "./UserPages/ProductDetails"
 
 
 const App: React.FC = () => {
@@ -41,12 +44,15 @@ const App: React.FC = () => {
         <Routes>
 
           {/* User Routes */}
-          <Route path='/' element={<Home />} />
+          <Route path='/' element={<FirstPage />} />
+          <Route path='/home' element={<Home />} />
           <Route path='/contact' element={<Contact />} />
-          <Route path='/user1' element={<LandingPage/>}/>
-          <Route path='/userSignIn' element={<SignIn/>}/>
-          <Route path='/userSignUp' element={<UserSignUp/>}/>
-          <Route path='/userPassword' element={<UserPassword/>}/>
+          <Route path='/user1' element={<LandingPage />}/>
+          <Route path='/userSignIn' element={<SignIn />}/>
+          <Route path='/userSignUp' element={<UserSignUp />}/>
+          <Route path='/userPassword' element={<UserPassword />}/>
+          <Route path='/products' element={<Products />}/>
+          <Route path='/products/:id' element={<ProductDetails />}/>
 
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLogin onLogin={handleAdminLogIn} />}/>

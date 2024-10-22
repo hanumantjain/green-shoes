@@ -1,34 +1,40 @@
 import React, { FormEvent, useState, ChangeEvent } from 'react'
-import axios, {AxiosError} from 'axios'
+import axios from 'axios'
 import { useLocation } from 'react-router-dom'
 import view from '../assets/view.png'
 import hide from '../assets/hide.png'
+import { useNavigate } from 'react-router-dom'
 
 interface LocationState{
-    userEmail: String
+    userEmail: string
 }
 
 export const UserPassword:React.FC = () => {
     const[userPassword, setUserPassword] = useState<string>('')
     const[showPassword, setShowPassword] = useState<boolean>(false)
-    const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL
+    const[resultMessage, setResultMessage] = useState<string>('')
 
+    const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL
+    const navigate = useNavigate()
     const location = useLocation()
-    const email = (location.state as LocationState)?.userEmail
+    const userEmail = (location.state as LocationState)?.userEmail
 
     const handleEmailSubmit = async (e: FormEvent) => {
         e.preventDefault()
         try{
-            const response = await axios.post(`${backendBaseUrl}/checkUser`, {
-                email,
+            const response = await axios.post(`${backendBaseUrl}/userLogin`, {
+                userEmail,
                 userPassword,
             })
-            
+            if(response.status === 200){
+                navigate('/home', { replace: true })
+            }
+
+            setResultMessage(response.data.message)
             setUserPassword('')
 
-        }catch (error) {
-            const axiosError = error as AxiosError<{ message: string }>
-                console.error('Error checking user:', axiosError)
+        }catch (error: any) {
+            setResultMessage(error.response.data.message)
         }
     }
 
@@ -43,7 +49,8 @@ export const UserPassword:React.FC = () => {
     <div className='flex justify-center pt-20'>
         <div className='flex flex-col gap-5 w-1/3'>
             <p className='text-4xl'>What's your password?</p>
-            <p>{email}</p>
+            <p>{userEmail}</p>
+            {resultMessage && <p className='text-red-500'>{resultMessage}</p>}
             <form onSubmit={handleEmailSubmit} className='flex flex-col gap-6'>
                 <div className='relative'>
                     <input

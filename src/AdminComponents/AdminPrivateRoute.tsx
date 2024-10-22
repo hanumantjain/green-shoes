@@ -1,5 +1,5 @@
 import React from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, replace } from 'react-router-dom'
 
 interface AdminPrivateRouteProps {
     children: React.ReactNode

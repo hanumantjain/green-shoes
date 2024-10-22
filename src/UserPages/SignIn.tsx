@@ -1,6 +1,6 @@
 import React, { FormEvent, useState } from 'react'
 import axios, {AxiosError} from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export const SignIn:React.FC = () => {
     const[userEmail, setUserEmail] = useState<string>('')
@@ -14,10 +14,10 @@ export const SignIn:React.FC = () => {
                 userEmail,
             })
             if (response.status === 200) {
-                navigate('/userPassword')
+                navigate('/userPassword', { state: { userEmail } })
             }
             else{
-                navigate('/userSignUp')
+                navigate('/userSignUp', { state: { userEmail } })
             }
             setUserEmail('')
 
@@ -45,6 +45,9 @@ export const SignIn:React.FC = () => {
                     <p>By continuing, I agree to our <span className=' underline'><a href="https://hanumantjain.com/" target='_blank' rel='noreferrer'>Privacy Policy</a></span></p>
                     <div className='pr-5'>
                         <button className='float-right border rounded-full p-2.5 px-5 border-black bg-black text-white'>Continue</button>
+                    </div>
+                    <div className='pr-5'>
+                        <p className='float-right px-5'>Or continue as a <span className=' underline'><Link to='/home'>Guest</Link></span></p>
                     </div>
 
             </form>

@@ -44,29 +44,28 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
     }
 
   return (
-    <div className='flex items-center justify-center h-screen'>
-        <div className='flex flex-col gap-6 border border-black w-1/4 p-10 text-center rounded'>
-            <div className=''>
-                Admin Login
-            </div>
-            {resultMessage && <p className='text-red-500'>{resultMessage}</p>}
-            <form onSubmit={handleSubmit} className='flex flex-col gap-6'>
-                <input 
+    <div className='flex justify-center pt-20'>
+    <div className='flex flex-col gap-5 w-1/3'>
+        <p className='text-4xl pb-10'>Admin Login</p>
+        {resultMessage && <p className='text-red-500'>{resultMessage}</p>}
+        <form onSubmit={handleSubmit} className='flex flex-col gap-6'>
+        <input 
                     type='text'
                     value={username}
                     placeholder='Enter your email'
-                    className='border border-black h-8 p-1 rounded w-full'
+                    className='border border-black p-4 rounded-xl w-full'
                     onChange={handleUsernameChange}
                     required
                 />
-                <div className='relative '>
-                    <input 
-                        type={showPassword ? 'text' : 'password'}
-                        value={password}
-                        placeholder='Enter your password'
-                        className='border border-black h-8 p-1 rounded w-full'
-                        onChange={handlePasswordChange}
-                        required
+            <div className='relative'>
+                <input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={password}
+                    placeholder="Password*"
+                    required
+                    className="border border-black p-4 rounded-xl w-full"
+                    onChange={handlePasswordChange}
                     />
                     <div className='absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer' onClick={handleShowPassword}>
                         {showPassword ? 
@@ -75,16 +74,14 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
 
                     </div>
                 </div>
-                
-
-                <div>
-                    <button className='border border-black h-8 px-5 rounded' type="submit">
-                        Log in
-                    </button>
+                <p className=' underline'><a href="https://hanumantjain.com/" target='_blank' rel='noreferrer'>Forgot Password?</a></p>
+                <div className='pr-5'>
+                    <button className='float-right border rounded-full p-2.5 px-5 border-black bg-black text-white'>Sign In</button>
                 </div>
-            </form>
 
-        </div>
+        </form>
     </div>
+</div>
+
   )
 }
