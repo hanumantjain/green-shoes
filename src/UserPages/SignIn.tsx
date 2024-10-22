@@ -13,10 +13,11 @@ export const SignIn:React.FC = () => {
             const response = await axios.post(`${backendBaseUrl}/checkUser`, {
                 userEmail,
             })
-            if (response.status === 204) {
-                navigate('/userSignUp')
-            } else {
+            if (response.status === 200) {
                 navigate('/userPassword')
+            }
+            else{
+                navigate('/userSignUp')
             }
             setUserEmail('')
 

@@ -59,7 +59,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLogin }) => {
                     onChange={handleUsernameChange}
                     required
                 />
-                <div className='relative'>
+                <div className='relative '>
                     <input 
                         type={showPassword ? 'text' : 'password'}
                         value={password}
