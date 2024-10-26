@@ -13,20 +13,21 @@ import { UserPassword } from "./UserPages/UserPassword"
 import FirstPage from "./UserPages/FirstPage"
 import Products from "./UserPages/Products"
 import ProductDetails from "./UserPages/ProductDetails"
+import { AuthProvider } from "./components/UserAuthContext"
 
 
 const App: React.FC = () => {
-  const [isAuthencticated , setIsAuthenticated] = useState<boolean>(
+  const [isAdminAuthencticated , setIsAdminAuthenticated] = useState<boolean>(
     sessionStorage.getItem('isAdminAuthenticated') === 'true'
   )
   const navigate = useNavigate()
 
   useEffect(() => {
-    sessionStorage.setItem('isAdminAuthenticated', String(isAuthencticated))
-  }, [isAuthencticated])
+    sessionStorage.setItem('isAdminAuthenticated', String(isAdminAuthencticated))
+  }, [isAdminAuthencticated])
 
   const handleAdminLogIn = (authStatus: boolean) => {
-    setIsAuthenticated(authStatus)
+    setIsAdminAuthenticated(authStatus)
     if (authStatus) {
       navigate('/adminHome')
     }
@@ -34,39 +35,41 @@ const App: React.FC = () => {
 
   // Handler for admin logout
   const handleAdminLogOut = () => {
-    setIsAuthenticated(false)
+    setIsAdminAuthenticated(false)
     sessionStorage.removeItem('isAdminAuthenticated')
     navigate('/admin')
   }
 
   return (
-    <div>
-        <Routes>
+    <AuthProvider>
+      <div>
+          <Routes>
 
-          {/* User Routes */}
-          <Route path='/' element={<FirstPage />} />
-          <Route path='/home' element={<Home />} />
-          <Route path='/contact' element={<Contact />} />
-          <Route path='/user1' element={<LandingPage />}/>
-          <Route path='/userSignIn' element={<SignIn />}/>
-          <Route path='/userSignUp' element={<UserSignUp />}/>
-          <Route path='/userPassword' element={<UserPassword />}/>
-          <Route path='/products' element={<Products />}/>
-          <Route path='/products/:id' element={<ProductDetails />}/>
+            {/* User Routes */}
+            <Route path='/' element={<FirstPage />} />
+            <Route path='/home' element={<Home />} />
+            <Route path='/contact' element={<Contact />} />
+            <Route path='/user1' element={<LandingPage />}/>
+            <Route path='/userSignIn' element={<SignIn />}/>
+            <Route path='/userSignUp' element={<UserSignUp />}/>
+            <Route path='/userPassword' element={<UserPassword />}/>
+            <Route path='/products' element={<Products />}/>
+            <Route path='/products/:id' element={<ProductDetails />}/>
 
-          {/* Admin Routes */}
-          <Route path="/admin" element={<AdminLogin onLogin={handleAdminLogIn} />}/>
-          <Route path="/adminHome" element={
-            <AdminPrivateRoute isAuthencticated={isAuthencticated}>
-              <AdminHome onLogOut={handleAdminLogOut} />
-            </AdminPrivateRoute>
-          }/>
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminLogin onLogin={handleAdminLogIn} />}/>
+            <Route path="/adminHome" element={
+              <AdminPrivateRoute isAuthencticated={isAdminAuthencticated}>
+                <AdminHome onLogOut={handleAdminLogOut} />
+              </AdminPrivateRoute>
+            }/>
 
 
-          <Route path='/*' element={<NotFound />}/>
-        </Routes>
-    </div>
-  );
+            <Route path='/*' element={<NotFound />}/>
+          </Routes>
+      </div>
+    </AuthProvider>
+  )
 }
 
-export default App;
+export default App

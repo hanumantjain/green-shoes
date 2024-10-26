@@ -29,7 +29,7 @@ const UserSignUp:React.FC = () => {
             return
         }
         try{
-            const response = await axios.post(`${backendBaseUrl}/userSignUp`, {
+            await axios.post(`${backendBaseUrl}/userSignUp`, {
                 firstName,
                 lastName,
                 userEmail,

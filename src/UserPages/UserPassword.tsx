@@ -1,9 +1,10 @@
 import React, { FormEvent, useState, ChangeEvent } from 'react'
-import axios from 'axios'
 import { useLocation } from 'react-router-dom'
 import view from '../assets/view.png'
 import hide from '../assets/hide.png'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../components/UserAuthContext'
+import axiosInstance from '../utils/axios'
 
 interface LocationState{
     userEmail: string
@@ -13,6 +14,7 @@ export const UserPassword:React.FC = () => {
     const[userPassword, setUserPassword] = useState<string>('')
     const[showPassword, setShowPassword] = useState<boolean>(false)
     const[resultMessage, setResultMessage] = useState<string>('')
+    const { UserLogin } = useAuth()
 
     const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL
     const navigate = useNavigate()
@@ -22,11 +24,12 @@ export const UserPassword:React.FC = () => {
     const handleEmailSubmit = async (e: FormEvent) => {
         e.preventDefault()
         try{
-            const response = await axios.post(`${backendBaseUrl}/userLogin`, {
+            const response = await axiosInstance.post(`${backendBaseUrl}/userLogin`, {
                 userEmail,
                 userPassword,
             })
             if(response.status === 200){
+                UserLogin(userEmail)
                 navigate('/home', { replace: true })
             }
 

@@ -2,7 +2,7 @@ import React from 'react'
 import AddAdmin from '../AdminComponents/AddAdmin'
 
 interface AdminHomeProps {
-    onLogOut: () => void;
+    onLogOut: () => void
 }
 
 const AdminHome: React.FC<AdminHomeProps> = ({ onLogOut }) => {
