@@ -15,7 +15,7 @@ code {
 @tailwind utilities;
 
 .gradient-text {
-  background: linear-gradient(359.72deg, #D2B183 30%, #E1C8A9 70%);
+  background: linear-gradient(359.72deg, #d4a875 40%, #e9c189 50%, #f1d3b1 60%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

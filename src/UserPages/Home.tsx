@@ -4,8 +4,7 @@ import homeShoe from '../assets/home-shoe.png'
 
 export const Home:React.FC = () => {
   return (
-    <div>
-        <div className='h-screen flex flex-col '>
+        <div className='flex flex-col '>
             <Navbar />
             <div className='flex w-full'>
                 <div className='pl-28 w-1/2 pt-20 flex flex-col gap-8 text-[#333333] justify-center'>
@@ -37,7 +36,9 @@ export const Home:React.FC = () => {
                     <img src={homeShoe} alt='shoe' className='object-cover'/>
                 </div>
             </div>
+            <div className='mt-96'>
+                
+            </div>
         </div>
-    </div>
   )
 }

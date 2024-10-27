@@ -14,6 +14,7 @@ import FirstPage from "./UserPages/FirstPage"
 import Products from "./UserPages/Products"
 import ProductDetails from "./UserPages/ProductDetails"
 import { AuthProvider } from "./components/UserAuthContext"
+import Cart from "./UserPages/Cart"
 
 
 const App: React.FC = () => {
@@ -55,6 +56,7 @@ const App: React.FC = () => {
             <Route path='/userPassword' element={<UserPassword />}/>
             <Route path='/products' element={<Products />}/>
             <Route path='/products/:id' element={<ProductDetails />}/>
+            <Route path='/cart' element={<Cart />}/>
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLogin onLogin={handleAdminLogIn} />}/>
