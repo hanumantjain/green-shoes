@@ -1,13 +1,11 @@
-import React, { FormEvent, useState, useEffect } from 'react'
+import React, { FormEvent, useState } from 'react'
 import axios, {AxiosError} from 'axios'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../components/UserAuthContext'
 
 export const SignIn:React.FC = () => {
     const[userEmail, setUserEmail] = useState<string>('')
     const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL
     const navigate = useNavigate()
-    const { UserLogin, guestLogin, isAuthenticated, isGuest } = useAuth()
 
     const handleEmailSubmit = async (e: FormEvent) => {
         e.preventDefault()
@@ -16,7 +14,6 @@ export const SignIn:React.FC = () => {
                 userEmail,
             })
             if (response.status === 200) {
-                UserLogin(userEmail)
                 navigate('/userPassword', { state: { userEmail } })
             }
             else{
@@ -31,15 +28,9 @@ export const SignIn:React.FC = () => {
     }
 
     const handleGuest = () => {
-        guestLogin()
         navigate('/home')
     }
 
-    useEffect(() => {
-        if (isAuthenticated || isGuest) {
-            navigate('/home');
-        }
-    }, [isAuthenticated, isGuest, navigate])
 
   return (
     <div className='flex justify-center pt-20'>

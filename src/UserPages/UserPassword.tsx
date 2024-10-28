@@ -3,7 +3,6 @@ import { useLocation } from 'react-router-dom'
 import view from '../assets/view.png'
 import hide from '../assets/hide.png'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../components/UserAuthContext'
 import axiosInstance from '../utils/axios'
 
 interface LocationState{
@@ -14,7 +13,6 @@ export const UserPassword:React.FC = () => {
     const[userPassword, setUserPassword] = useState<string>('')
     const[showPassword, setShowPassword] = useState<boolean>(false)
     const[resultMessage, setResultMessage] = useState<string>('')
-    const { UserLogin } = useAuth()
 
     const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL
     const navigate = useNavigate()
@@ -29,7 +27,6 @@ export const UserPassword:React.FC = () => {
                 userPassword,
             })
             if(response.status === 200){
-                UserLogin(userEmail)
                 navigate('/home', { replace: true })
             }
 

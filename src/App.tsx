@@ -13,8 +13,8 @@ import { UserPassword } from "./UserPages/UserPassword"
 import FirstPage from "./UserPages/FirstPage"
 import Products from "./UserPages/Products"
 import ProductDetails from "./UserPages/ProductDetails"
-import { AuthProvider } from "./components/UserAuthContext"
 import Cart from "./UserPages/Cart"
+import Profile from "./UserPages/Profile"
 
 
 const App: React.FC = () => {
@@ -42,7 +42,6 @@ const App: React.FC = () => {
   }
 
   return (
-    <AuthProvider>
       <div>
           <Routes>
 
@@ -57,6 +56,7 @@ const App: React.FC = () => {
             <Route path='/products' element={<Products />}/>
             <Route path='/products/:id' element={<ProductDetails />}/>
             <Route path='/cart' element={<Cart />}/>
+            <Route path='/profile' element={<Profile />}/>
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLogin onLogin={handleAdminLogIn} />}/>
@@ -70,7 +70,6 @@ const App: React.FC = () => {
             <Route path='/*' element={<NotFound />}/>
           </Routes>
       </div>
-    </AuthProvider>
   )
 }
 
