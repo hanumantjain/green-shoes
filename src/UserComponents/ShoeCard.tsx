@@ -8,7 +8,7 @@ interface ShoeCardProps {
 }
 const ShoeCard:React.FC<ShoeCardProps> = ({image, title, description, price}) => {
   return (
-    <div className='bg-white overflow-hidden cursor-pointer'>
+    <div className='overflow-hidden cursor-pointer hover:border-2 hover:border-white'>
         <img src={image} alt={title}
         className='w-full object-contain' />
         <div className="p-4">

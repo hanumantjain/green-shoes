@@ -2,18 +2,40 @@ import React from 'react'
 import { Navbar } from '../UserComponents/Navbar'
 import CartCard from '../UserComponents/CartCard'
 
+type CartItem = {
+    id: number;
+    title: string;
+    price: number;
+    size: number;
+    image: string;
+  }
+  
+type CartProps = {
+    cart: CartItem[];
+}
 
-const Cart:React.FC = () => {
+const Cart:React.FC<CartProps> = ({ cart }) => {
   return (
     <div>
         <Navbar />
         <div className='w-full flex px-20 text-xl'>
             <div className='w-3/5 pt-20'>
-                <div>
-                    <CartCard />
-                    <CartCard />
-                    <CartCard />
-                </div>
+            {cart.length > 0 ? (
+                    <ul>
+                        {cart.map((item) => (
+                            <li key={item.id}>
+                                <CartCard 
+                                    image={item.image} 
+                                    title={item.title} 
+                                    size={item.size} 
+                                    price={item.price} 
+                                />
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>Your cart is empty</p>
+                )}
             </div>
             <div className='flex flex-col gap-2 px-20 w-2/5'>
                 <h1 className='text-xl pt-20 pb-5'>Order Summary</h1>

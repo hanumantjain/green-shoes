@@ -15,12 +15,22 @@ import Products from "./UserPages/Products"
 import ProductDetails from "./UserPages/ProductDetails"
 import Cart from "./UserPages/Cart"
 import Profile from "./UserPages/Profile"
+import AddAdmin from "./AdminComponents/AddAdmin"
 
+type CartItem = {
+  id: number;
+  title: string;
+  price: number;
+  size: number;
+  image: string;
+}
 
 const App: React.FC = () => {
   const [isAdminAuthencticated , setIsAdminAuthenticated] = useState<boolean>(
     sessionStorage.getItem('isAdminAuthenticated') === 'true'
   )
+  const [cart, setCart] = useState<CartItem[]>([])
+
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -40,6 +50,9 @@ const App: React.FC = () => {
     sessionStorage.removeItem('isAdminAuthenticated')
     navigate('/admin')
   }
+  const addToCart = (item: CartItem) => {
+    setCart((prevCart) => [...prevCart, item]);
+  }
 
   return (
       <div>
@@ -54,8 +67,8 @@ const App: React.FC = () => {
             <Route path='/userSignUp' element={<UserSignUp />}/>
             <Route path='/userPassword' element={<UserPassword />}/>
             <Route path='/products' element={<Products />}/>
-            <Route path='/products/:id' element={<ProductDetails />}/>
-            <Route path='/cart' element={<Cart />}/>
+            <Route path='/products/:id' element={<ProductDetails cart={cart} addToCart={addToCart} />}/>
+            <Route path='/cart' element={<Cart cart={cart} />}/>
             <Route path='/profile' element={<Profile />}/>
 
             {/* Admin Routes */}
@@ -63,6 +76,11 @@ const App: React.FC = () => {
             <Route path="/adminHome" element={
               <AdminPrivateRoute isAuthencticated={isAdminAuthencticated}>
                 <AdminHome onLogOut={handleAdminLogOut} />
+              </AdminPrivateRoute>
+            }/>
+            <Route path="/addAdmin" element={
+              <AdminPrivateRoute isAuthencticated={isAdminAuthencticated}>
+                <AddAdmin />
               </AdminPrivateRoute>
             }/>
 

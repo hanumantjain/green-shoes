@@ -32,7 +32,7 @@ const AddAdmin: React.FC = () => {
     }
 
     return (
-        <div className="">
+        <div className="flex justify-center items-center h-screen">
             <div className="flex flex-col gap-6 border border-black w-1/3 p-10 text-center rounded">
                 <div>Add Admin</div>
                 {message && <p className="text-red-500">{message}</p>}
@@ -42,7 +42,7 @@ const AddAdmin: React.FC = () => {
                         name="name"
                         value={name}
                         placeholder="Enter name"
-                        className="border border-black p-1"
+                        className="border border-black p-4 rounded-xl w-full"
                         onChange={(e) => setName(e.target.value)}
                         required
                     />
@@ -51,7 +51,7 @@ const AddAdmin: React.FC = () => {
                         name="username"
                         value={username}
                         placeholder="Enter email"
-                        className="border border-black p-1"
+                        className="border border-black p-4 rounded-xl w-full"
                         onChange={(e) => setUsername(e.target.value)}
                     />
                     <input
@@ -59,7 +59,7 @@ const AddAdmin: React.FC = () => {
                         name="password"
                         value={password}
                         placeholder="Enter password"
-                        className="border border-black p-1"
+                        className="border border-black p-4 rounded-xl w-full"
                         onChange={(e) => setPassword(e.target.value)}
                     />
                     <div>

@@ -1,9 +1,12 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import icon from '../assets/icon.png'
-import { FaUser, FaShoppingCart } from "react-icons/fa"
 
-export const Navbar:React.FC = () => {
+interface NavbarProps {
+    onLogOut: () => void
+  }
+
+export const Navbar:React.FC<NavbarProps> = ({ onLogOut }) => {
 
   return (
     <div className='h-[93px] bg-white flex'>
@@ -13,14 +16,13 @@ export const Navbar:React.FC = () => {
                 <h1 className='text-4xl font-bold'>PRAK</h1>
             </div>
             <div className='flex gap-10 font-semibold'>
-                <Link to='/home' className='text-[19px]'>Home</Link>
-                <Link to='/home' className='text-[19px]'>About</Link>
-                <Link to='/products' className='text-[19px]'>Products</Link>
-                <Link to='/home' className='text-[19px]'>Contact</Link>
+                <Link to='/dashboard' className='text-[19px]'>Home</Link>
             </div>
-            <div className='flex gap-6 text-2xl'>
-                <Link to='/profile'><FaUser /></Link>
-                <Link to='/cart'><FaShoppingCart /></Link>
+            <div>
+                <Link to='/addAdmin' className='text-[19px] font-semibold'>Add Admin</Link>
+            </div>
+            <div>
+                <button className='text-[19px] font-semibold' onClick={onLogOut}>Log Out</button>
             </div>
         </div>
     </div>
