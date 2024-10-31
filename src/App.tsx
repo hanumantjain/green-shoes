@@ -21,6 +21,7 @@ import AboutUs from "./components/about-us";
 import AboutUsPage from "./components/about-us";
 import ContactUsPage from "./components/contact-us";
 
+
 type CartItem = {
   id: number
   title: string
