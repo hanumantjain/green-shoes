@@ -1,0 +1,39 @@
+/* AboutUsPage.css */
+
+.about-us-container {
+    font-family: Arial, sans-serif;
+}
+
+.about-us-background {
+    height: 60vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.about-us-title {
+    font-size: 3em;
+    color: white;
+    text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.7);
+}
+
+.about-us-content {
+    padding: 2rem;
+    background-color: #e6d2c2;
+    text-align: center;
+}
+
+.about-us-heading {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #333;
+}
+
+.about-us-text {
+    font-size: 1em;
+    color: #333;
+    line-height: 1.6;
+    margin-top: 1rem;
+}
