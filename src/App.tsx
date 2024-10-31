@@ -19,6 +19,7 @@ import AddAdmin from "./AdminComponents/AddAdmin"
 import AddProducts from "./AdminPages/AddProducts"
 import AboutUs from "./components/about-us";
 import AboutUsPage from "./components/about-us";
+import ContactUsPage from "./components/contact-us";
 
 type CartItem = {
   id: number
@@ -64,7 +65,7 @@ const App: React.FC = () => {
             {/* User Routes */}
             <Route path='/' element={<FirstPage />} />
             <Route path='/home' element={<Home />} />
-            <Route path='/contact' element={<Contact />} />
+            <Route path='/contact' element={<ContactUsPage />} />
             <Route path='/user1' element={<LandingPage />}/>
             <Route path='/userSignIn' element={<SignIn />}/>
             <Route path='/userSignUp' element={<UserSignUp />}/>
