@@ -16,6 +16,7 @@ import ProductDetails from "./UserPages/ProductDetails"
 import Cart from "./UserPages/Cart"
 import Profile from "./UserPages/Profile"
 import AddAdmin from "./AdminComponents/AddAdmin"
+import AddProducts from "./AdminPages/AddProducts"
 
 type CartItem = {
   id: number;
@@ -81,6 +82,11 @@ const App: React.FC = () => {
             <Route path="/addAdmin" element={
               <AdminPrivateRoute isAuthencticated={isAdminAuthencticated}>
                 <AddAdmin />
+              </AdminPrivateRoute>
+            }/>
+            <Route path="/addProducts" element={
+              <AdminPrivateRoute isAuthencticated={isAdminAuthencticated}>
+                <AddProducts onLogOut={handleAdminLogOut}/>
               </AdminPrivateRoute>
             }/>
 
