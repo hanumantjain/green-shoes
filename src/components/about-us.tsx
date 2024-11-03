@@ -17,7 +17,7 @@ const AboutUsPage = () => {
             <div className="about-us-content">
                 <h2 className="about-us-heading">BIG LIFE, SMALL FOOTPRINT</h2>
                 <p className="about-us-text">
-                    Hi. Welcome to SAOLA. We're here to create sustainably made shoes from recycled materials that feel like a warm hug from an old friend.
+                    Hi. Welcome to PRAK. We're here to create sustainably made shoes from recycled materials that feel like a warm hug from an old friend.
                     We bring to life timeless styles that effortlessly shift from casual Fridays to weekend escapes, from urban streets to coastal boardwalks
                     and everything in between - because that's just how we roll.
                 </p>
