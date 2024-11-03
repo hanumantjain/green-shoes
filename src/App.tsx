@@ -19,11 +19,11 @@ import AddAdmin from "./AdminComponents/AddAdmin"
 import AddProducts from "./AdminPages/AddProducts"
 
 type CartItem = {
-  id: number;
-  title: string;
-  price: number;
-  size: number;
-  image: string;
+  id: number
+  title: string
+  price: number
+  size: number
+  image: string
 }
 
 const App: React.FC = () => {

@@ -1,55 +1,55 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import img from '../assets/shoes.jpg'
 import { useParams } from 'react-router-dom';
-import { NotFound } from '../components/NotFound';
-import { Navbar } from '../UserComponents/Navbar';
+import { Navbar } from '../UserComponents/Navbar'
+import axios from 'axios'
 
 type CartItem = {
-  id: number;
-  title: string;
-  price: number;
-  size: number;
-  image: string;
+  id: number
+  title: string
+  price: number
+  size: number
+  image: string
 }
 
 type ProductDetailsProps = {
   cart: CartItem[]
-  addToCart: (item: CartItem) => void;
+  addToCart: (item: CartItem) => void
 }
-
-const cardData = [
-    { id: 1, image: img, title: 'Card 1', description: 'This is a good prodcut to buy', price: 300},
-    { id: 2, image: img, title: 'Card 2', description: 'This is a good prodcut to buy', price: 300},
-    { id: 3, image: img, title: 'Card 3', description: 'This is a good prodcut to buy', price: 300},
-    { id: 4, image: img, title: 'Card 4', description: 'This is a good prodcut to buy', price: 300},
-    { id: 5, image: img, title: 'Card 5', description: 'This is a good prodcut to buy', price: 300},
-    { id: 6, image: img, title: 'Card 6', description: 'This is a good prodcut to buy', price: 300},
-    { id: 7, image: img, title: 'Card 7', description: 'This is a good prodcut to buy', price: 300},
-    { id: 8, image: img, title: 'Card 8', description: 'This is a good prodcut to buy', price: 300},
-    { id: 9, image: img, title: 'Card 9', description: 'This is a good prodcut to buy', price: 300},
-  ]
 
 const ProductDetails:React.FC<ProductDetailsProps> = ({ addToCart }) => {
     const {id} = useParams<{id: string}>()
-    const card = cardData.find((card) => card.id === parseInt(id || '', 10))
-
+    const[product, setProduct] = useState<any>(null)
     const[selectedSize, setSelectedSize] = useState<number | null>(null)
     const[error, setError] = useState<string | null>(null)
+    const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL
 
-    if(!card){
-        return <div><NotFound /></div>
-    }
+    useEffect(() => {
+      const fetchProduct = async () => {
+        try{
+          const response = await axios.get(`${backendBaseUrl}/getProducts/${id}`)
+          if(response.status === 200){
+            setProduct(response.data)
+          }else{
+            throw new Error('Product not found')
+          }
+        }catch (error: any){
+          setError(error.message)
+        }
+      }
+      fetchProduct()
+    }, [id, backendBaseUrl])
 
   const handleAddToCart = () => {
     if (selectedSize) {
       addToCart({
-        id: card.id,
-        title: card.title,
-        price: card.price,
+        id: product.product_id,
+        title: product.name,
+        price: product.price,
         size: selectedSize,
-        image: card.image,
+        image: product.image_url || img
       })
-      alert(`Added ${card.title} - Size ${selectedSize} to cart`)
+      alert(`Added ${product.name} - Size ${selectedSize} to cart`)
       setSelectedSize(null)
       setError(null)
     }else{
@@ -61,18 +61,22 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({ addToCart }) => {
     setSelectedSize(size)
     setError(null)
   }
+
+  if (!product) {
+    return <div>Product not found.</div>; // Handle case where product is null
+}
     
   return (
     <div>
       <Navbar />
       <div className="flex px-32 w-full pt-20">
         <div className='w-1/2'>
-          <img src={card.image} alt={card.title} className="w-full object-cover" />
+          <img src={img} alt={product.name} className="w-full object-cover" />
         </div>
         <div className='pl-20 flex flex-col gap-3'>
           <div>
-            <h2 className="text-4xl font-bold">{card.title}</h2>
-            <p>{card.price}</p>
+            <h2 className="text-4xl font-bold">{product.name}</h2>
+            <p>{product.price}</p>
           </div>
           <div>
             <h1>Size</h1>
@@ -96,7 +100,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({ addToCart }) => {
             {error && <p className="text-red-500 mt-2">{error}</p>}
           </div>
           <div>
-            <p>{card.description}</p>
+            <p>{product.description}</p>
           </div>
           <button className='border border-black p-3 rounded-full'
             onClick={handleAddToCart}>Add to Bag</button>
