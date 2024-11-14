@@ -16,7 +16,7 @@ export const Navbar:React.FC<NavbarProps> = ({ onLogOut }) => {
                 <h1 className='text-4xl font-bold'>PRAK</h1>
             </div>
             <div className='flex gap-10 font-semibold'>
-                <Link to='/dashboard' className='text-[19px]'>Home</Link>
+                <Link to='/adminHome' className='text-[19px]'>Home</Link>
             </div>
             <div>
                 <Link to='/addAdmin' className='text-[19px] font-semibold'>Add Admin</Link>

@@ -8,11 +8,11 @@ interface Size {
     size_label: string
 }
 
-interface AddProductsProps {
+interface EditProductsProps {
     onLogOut: () => void
 }
 
-const AddProducts: React.FC<AddProductsProps> = ({ onLogOut }) => {
+const EditProducts: React.FC<EditProductsProps> = ({ onLogOut }) => {
     const [categories, setCategories] = useState<any[]>([])
     const [selectedCategory, setSelectedCategory] = useState<string>('')
     const [sizes, setSizes] = useState<Size[]>([])
@@ -21,7 +21,6 @@ const AddProducts: React.FC<AddProductsProps> = ({ onLogOut }) => {
     const [description, setDescription] = useState<string>('')
     const [price, setPrice] = useState<string>('')
     const [imageURL, setImageURL] = useState<string>('')
-    const [color, setColor] = useState<string>('')
     const [message, setMessage] = useState<string>('')
     const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL
 
@@ -34,8 +33,7 @@ const AddProducts: React.FC<AddProductsProps> = ({ onLogOut }) => {
                 description,
                 price,
                 selectedCategory,
-                image_url : imageURL,
-                color: color,
+                image_URL : imageURL,
                 category_id: selectedCategory,
                 sizes: Object.entries(quantities).map(([sizeId, quantity]) => ({ size_id: sizeId, quantity })),
             })
@@ -47,7 +45,6 @@ const AddProducts: React.FC<AddProductsProps> = ({ onLogOut }) => {
             setDescription('')
             setPrice('')
             setImageURL('')
-            setColor('')
             setMessage(response.data.message)
         } catch (error) {
             const axiosError = error as AxiosError<{ message: string }>;
@@ -99,7 +96,7 @@ const AddProducts: React.FC<AddProductsProps> = ({ onLogOut }) => {
     return (
         <div>
             <Navbar onLogOut={onLogOut}/>
-        <div className="flex justify-center items-center">
+        <div className="flex justify-center items-center py-20">
             <div className="flex flex-col gap-6 border border-black w-1/3 p-10 text-center rounded">
                 <div>Add Products</div>
                 {message && <p className="text-red-500">{message}</p>}
@@ -138,14 +135,6 @@ const AddProducts: React.FC<AddProductsProps> = ({ onLogOut }) => {
                         className="border border-black p-4 rounded-xl w-full"
                         onChange={(e) => setImageURL(e.target.value)}
                     />
-                    <input
-                        type="text"
-                        name="color"
-                        value={color}
-                        placeholder="Enter Color"
-                        className="border border-black p-4 rounded-xl w-full"
-                        onChange={(e) => setColor(e.target.value)}
-                    />
                     
                     <div className="">
                         <h2 className="">Enter Stock Quantities per Size:</h2>
@@ -178,4 +167,4 @@ const AddProducts: React.FC<AddProductsProps> = ({ onLogOut }) => {
     )
 }
 
-export default AddProducts
+export default EditProducts

@@ -17,6 +17,9 @@ import Cart from "./UserPages/Cart"
 import Profile from "./UserPages/Profile"
 import AddAdmin from "./AdminComponents/AddAdmin"
 import AddProducts from "./AdminPages/AddProducts"
+import About from "./UserPages/About"
+import EditProducts from "./AdminPages/EditProduct"
+import Cateorgy from "./AdminPages/Cateorgy"
 
 type CartItem = {
   id: number
@@ -70,6 +73,7 @@ const App: React.FC = () => {
             <Route path='/products' element={<Products />}/>
             <Route path='/products/:id' element={<ProductDetails cart={cart} addToCart={addToCart} />}/>
             <Route path='/cart' element={<Cart cart={cart} />}/>
+            <Route path='/about' element={<About />}/>
             <Route path='/profile' element={<Profile />}/>
 
             {/* Admin Routes */}
@@ -89,8 +93,18 @@ const App: React.FC = () => {
                 <AddProducts onLogOut={handleAdminLogOut}/>
               </AdminPrivateRoute>
             }/>
+            <Route path="/editProduct" element={
+              <AdminPrivateRoute isAuthencticated={isAdminAuthencticated}>
+                <EditProducts onLogOut={handleAdminLogOut}/>
+              </AdminPrivateRoute>
+            }/>
+            <Route path="/category" element={
+              <AdminPrivateRoute isAuthencticated={isAdminAuthencticated}>
+                <Cateorgy onLogOut={handleAdminLogOut}/>
+              </AdminPrivateRoute>
+            }/>
 
-
+            
             <Route path='/*' element={<NotFound />}/>
           </Routes>
       </div>
