@@ -19,9 +19,6 @@ const AdminHome: React.FC<AdminHomeProps> = ({ onLogOut }) => {
                         <Link to='/addProducts' className='w-1/4 border border-black p-4 cursor-pointer'>
                             Add New Product
                         </Link>
-                        <Link to='/editProduct' className='w-1/4 border border-black p-4 cursor-pointer'>
-                            Edit Product
-                        </Link>
                         <Link to='/category' className='w-1/4 border border-black p-4 cursor-pointer'>
                             Categorize Product
                         </Link>

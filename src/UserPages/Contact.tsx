@@ -1,7 +1,13 @@
 import React from 'react'
+import { Navbar } from '../UserComponents/Navbar'
 
-export const Contact:React.FC = () => {
+const Contact:React.FC = () => {
   return (
-    <div>Contact</div>
+    <div>
+      <Navbar />
+      
+    </div>
   )
 }
+
+export default Contact

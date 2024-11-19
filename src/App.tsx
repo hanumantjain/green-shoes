@@ -1,7 +1,6 @@
 import { Routes, Route, useNavigate } from "react-router-dom"
 import { Home } from "./UserPages/Home"
 import { NotFound } from "./components/NotFound"
-import { Contact } from "./UserPages/Contact"
 import { AdminLogin } from "./AdminPages/AdminLogin"
 import { useState , useEffect } from "react"
 import AdminHome from "./AdminPages/AdminHome"
@@ -18,8 +17,8 @@ import Profile from "./UserPages/Profile"
 import AddAdmin from "./AdminComponents/AddAdmin"
 import AddProducts from "./AdminPages/AddProducts"
 import About from "./UserPages/About"
-import EditProducts from "./AdminPages/EditProduct"
 import Cateorgy from "./AdminPages/Cateorgy"
+import Contact from "./UserPages/Contact"
 
 type CartItem = {
   id: number
@@ -66,7 +65,6 @@ const App: React.FC = () => {
             {/* User Routes */}
             <Route path='/' element={<FirstPage />} />
             <Route path='/home' element={<Home />} />
-            <Route path='/contact' element={<ContactUsPage />} />
             <Route path='/user1' element={<LandingPage />}/>
             <Route path='/userSignIn' element={<SignIn />}/>
             <Route path='/userSignUp' element={<UserSignUp />}/>
@@ -75,8 +73,8 @@ const App: React.FC = () => {
             <Route path='/products/:id' element={<ProductDetails cart={cart} addToCart={addToCart} />}/>
             <Route path='/cart' element={<Cart cart={cart} />}/>
             <Route path='/about' element={<About />}/>
+            <Route path='/contact' element={<Contact />} />
             <Route path='/profile' element={<Profile />}/>
-            <Route path='/about' element={<AboutUsPage />}/>
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLogin onLogin={handleAdminLogIn} />}/>
@@ -93,11 +91,6 @@ const App: React.FC = () => {
             <Route path="/addProducts" element={
               <AdminPrivateRoute isAuthencticated={isAdminAuthencticated}>
                 <AddProducts onLogOut={handleAdminLogOut}/>
-              </AdminPrivateRoute>
-            }/>
-            <Route path="/editProduct" element={
-              <AdminPrivateRoute isAuthencticated={isAdminAuthencticated}>
-                <EditProducts onLogOut={handleAdminLogOut}/>
               </AdminPrivateRoute>
             }/>
             <Route path="/category" element={

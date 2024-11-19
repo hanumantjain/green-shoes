@@ -1,45 +1,47 @@
-import React, { useEffect, useState } from 'react'
-import img from '../assets/shoes.jpg'
+import React, { useEffect, useState } from 'react';
+import img from '../assets/shoes.jpg'; // Default image
 import { useParams } from 'react-router-dom';
-import { Navbar } from '../UserComponents/Navbar'
-import axios from 'axios'
+import { Navbar } from '../UserComponents/Navbar';
+import axios from 'axios';
 
 type CartItem = {
-  id: number
-  title: string
-  price: number
-  size: number
-  color: string
-  image: string
-}
+  id: number;
+  title: string;
+  price: number;
+  size: number;
+  color: string;
+  image: string;
+};
 
 type ProductDetailsProps = {
-  cart: CartItem[]
-  addToCart: (item: CartItem) => void
-}
+  cart: CartItem[];
+  addToCart: (item: CartItem) => void;
+};
 
-const ProductDetails:React.FC<ProductDetailsProps> = ({ addToCart }) => {
-    const {id} = useParams<{id: string}>()
-    const[product, setProduct] = useState<any>(null)
-    const[selectedSize, setSelectedSize] = useState<number | null>(null)
-    const[error, setError] = useState<string | null>(null)
-    const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL
+const ProductDetails: React.FC<ProductDetailsProps> = ({ addToCart }) => {
+  const { id } = useParams<{ id: string }>();
+  const [product, setProduct] = useState<any>(null);
+  const [selectedSize, setSelectedSize] = useState<number | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string>(img); // For image selection
+  const [error, setError] = useState<string | null>(null);
+  const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL;
 
-    useEffect(() => {
-      const fetchProduct = async () => {
-        try{
-          const response = await axios.get(`${backendBaseUrl}/getProducts/${id}`)
-          if(response.status === 200){
-            setProduct(response.data)
-          }else{
-            throw new Error('Product not found')
-          }
-        }catch (error: any){
-          setError(error.message)
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await axios.get(`${backendBaseUrl}/getProducts/${id}`);
+        if (response.status === 200) {
+          setProduct(response.data);
+          setSelectedImage(response.data.image_urls[0] || img); // Default to the first image
+        } else {
+          throw new Error('Product not found');
         }
+      } catch (error: any) {
+        setError(error.message);
       }
-      fetchProduct()
-    }, [id, backendBaseUrl])
+    };
+    fetchProduct();
+  }, [id, backendBaseUrl]);
 
   const handleAddToCart = () => {
     if (selectedSize) {
@@ -49,33 +51,57 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({ addToCart }) => {
         price: product.price,
         color: product.color,
         size: selectedSize,
-        image: product.image_url || img
-      })
-      alert(`Added ${product.name} - Size ${selectedSize} to cart`)
-      setSelectedSize(null)
-      setError(null)
-    }else{
-      setError('Please select a size')
+        image: selectedImage,
+      });
+      alert(`Added ${product.name} - Size ${selectedSize} to cart`);
+      setSelectedSize(null);
+      setError(null);
+    } else {
+      setError('Please select a size');
     }
-  }
+  };
 
-  const handleSize = (size: number) =>{
-    setSelectedSize(size)
-    setError(null)
-  }
+  const handleSize = (size: number) => {
+    setSelectedSize(size);
+    setError(null);
+  };
+
+  const handleImageClick = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+  };
 
   if (!product) {
     return <div>Product not found.</div>; // Handle case where product is null
-}
-    
+  }
+
   return (
     <div>
       <Navbar />
       <div className="flex px-32 w-full pt-20">
-        <div className='w-1/2'>
-          <img src={img} alt={product.name} className="w-full object-cover" />
+        <div className="w-1/2">
+          {/* Main Image */}
+          <img
+            src={selectedImage}
+            alt={product?.name || 'Product'}
+            className="w-full object-cover"
+            style={{ maxHeight: '400px', objectFit: 'cover' }} // Shorter height for the main image
+          />
+          {/* Thumbnail Images */}
+          <div className="flex gap-4 mt-4">
+            {product.image_urls?.map((imageUrl: string, index: number) => (
+              <img
+                key={index}
+                src={imageUrl}
+                alt={`Thumbnail ${index + 1}`}
+                className={`w-20 h-20 object-cover cursor-pointer border ${
+                  selectedImage === imageUrl ? 'border-black' : 'border-gray-300'
+                }`}
+                onClick={() => handleImageClick(imageUrl)}
+              />
+            )) || <div>No images available</div>}
+          </div>
         </div>
-        <div className='pl-20 flex flex-col gap-3'>
+        <div className="pl-20 flex flex-col gap-3">
           <div>
             <h2 className="text-4xl font-bold">{product.name}</h2>
             <p>$ {product.price}</p>
@@ -102,15 +128,27 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({ addToCart }) => {
             </div>
             {error && <p className="text-red-500 mt-2">{error}</p>}
           </div>
+  
           <div>
             <p>{product.description}</p>
+            {/* Display environmental message */}
+            {product.environmental_message && (
+              <div className="mt-4 p-4 border-t border-gray-200">
+                <h3 className="font-semibold text-green-600">Environmental Impact</h3>
+                <p className="text-sm text-gray-700">{product.environmental_message}</p>
+              </div>
+            )}
           </div>
-          <button className='border border-black p-3 rounded-full'
-            onClick={handleAddToCart}>Add to Bag</button>
+          <button
+            className="border border-black p-3 rounded-full"
+            onClick={handleAddToCart}
+          >
+            Add to Bag
+          </button>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default ProductDetails
+export default ProductDetails;

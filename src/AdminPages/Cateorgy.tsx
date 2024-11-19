@@ -13,6 +13,7 @@ const Category: React.FC<CategoryProps> = ({ onLogOut }) => {
     const [products, setProducts] = useState<any[]>([])
     const [editingProduct, setEditingProduct] = useState<any>(null)
     const [allSizes, setAllSizes] = useState<any[]>([])
+    const [loadingProducts, setLoadingProducts] = useState<boolean>(false)
     const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL
 
     useEffect(() => {
@@ -41,12 +42,15 @@ const Category: React.FC<CategoryProps> = ({ onLogOut }) => {
 
     useEffect(() => {
         if (selectedCategory) {
+            setLoadingProducts(true); // Start loading
             const fetchProducts = async () => {
                 try {
                     const response = await axios.get(`${backendBaseUrl}/getCategory/${selectedCategory}/products`)
                     setProducts(response.data);
                 } catch (error) {
-                    console.error('Error fetching products', error)
+                    console.error('Error fetching products')
+                } finally {
+                    setLoadingProducts(false); // Stop loading
                 }
             };
             fetchProducts()
@@ -55,21 +59,21 @@ const Category: React.FC<CategoryProps> = ({ onLogOut }) => {
 
     const handleSaveProduct = async (updatedProduct: any) => {
         try {
-            const fetchProducts = async () => {
-                try {
-                    const response = await axios.get(`${backendBaseUrl}/getCategory/${selectedCategory}/products`)
-                    setProducts(response.data);
-                } catch (error) {
-                    console.error('Error fetching products after update', error)
-                }
-            }
-            fetchProducts()
-
+             await axios.put(
+                `${backendBaseUrl}/products/${updatedProduct.product_id}`, 
+                updatedProduct
+            )
+            setProducts((prevProducts) =>
+                prevProducts.map((product) =>
+                    product.product_id === updatedProduct.product_id ? updatedProduct : product
+                )
+            )
             setEditingProduct(null)
         } catch (error) {
-            console.error('Error updating product', error)
+            console.error('Error updating product:', error)
         }
     }
+    
 
     return (
         <div>
@@ -95,25 +99,32 @@ const Category: React.FC<CategoryProps> = ({ onLogOut }) => {
                         <h3 className="text-xl font-bold mb-4">
                             Products in {categories.find((cat) => cat.category_id === selectedCategory)?.category_name}
                         </h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {products.map((product) => (
-                                <div
-                                    key={product.product_id}
-                                    className="bg-white p-4 rounded shadow cursor-pointer"
-                                    onClick={() => setEditingProduct(product)}
-                                >
-                                    <img
-                                        src={product.image_urls?.[0] || 'default-image-url.jpg'}
-                                        alt={product.name}
-                                        className="h-40 w-full object-cover rounded mb-4"
-                                    />
-                                    <h4 className="text-lg font-semibold">{product.name}</h4>
-                                    <p className="text-gray-600">{product.description}</p>
-                                    <p className="text-blue-500 font-bold mt-2">${product.price}</p>
-                                    <p className="text-gray-500">Color: {product.color}</p>
-                                </div>
-                            ))}
-                        </div>
+
+                        {loadingProducts ? (
+                            <p>Loading products...</p>
+                        ) : products.length === 0 ? (
+                            <p className="text-gray-600">No products available in this category.</p>
+                        ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {products.map((product) => (
+                                    <div
+                                        key={product.product_id}
+                                        className="bg-white p-4 rounded shadow cursor-pointer"
+                                        onClick={() => setEditingProduct(product)}
+                                    >
+                                        <img
+                                            src={product.image_urls?.[0]}
+                                            alt={product.name}
+                                            className="w-full object-fit rounded mb-4"
+                                        />
+                                        <h4 className="text-lg font-semibold">{product.name}</h4>
+                                        <p className="text-gray-600">{product.description}</p>
+                                        <p className="text-blue-500 font-bold mt-2">${product.price}</p>
+                                        <p className="text-gray-500">Color: {product.color}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </>
                 )}
 
@@ -130,4 +141,4 @@ const Category: React.FC<CategoryProps> = ({ onLogOut }) => {
     )
 }
 
-export default Category
+export default Category;
