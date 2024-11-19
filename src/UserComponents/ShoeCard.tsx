@@ -4,9 +4,10 @@ interface ShoeCardProps {
     image: string,
     title: string,
     description: string,
+    color: string,
     price:number
 }
-const ShoeCard:React.FC<ShoeCardProps> = ({image, title, description, price}) => {
+const ShoeCard:React.FC<ShoeCardProps> = ({image, title, description, color, price}) => {
   return (
     <div className='overflow-hidden cursor-pointer hover:border-2 hover:border-white'>
         <img src={image} alt={title}
@@ -14,6 +15,7 @@ const ShoeCard:React.FC<ShoeCardProps> = ({image, title, description, price}) =>
         <div className="p-4">
         <h2 className="text-lg font-bold">{title}</h2>
         <p>{description}</p>
+        <p>{color}</p>
         <p>$ {price}</p>
       </div>
     </div>

@@ -25,6 +25,7 @@ type CartItem = {
   id: number
   title: string
   price: number
+  color: string
   size: number
   image: string
 }

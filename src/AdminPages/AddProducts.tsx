@@ -20,9 +20,10 @@ const AddProducts: React.FC<AddProductsProps> = ({ onLogOut }) => {
     const [name, setName] = useState<string>('')
     const [description, setDescription] = useState<string>('')
     const [price, setPrice] = useState<string>('')
-    const [imageURL, setImageURL] = useState<string>('')
+    const [imageURLs, setImageURLs] = useState<string[]>(['', '', '', ''])  // For 4 images
     const [color, setColor] = useState<string>('')
     const [message, setMessage] = useState<string>('')
+    const [environmentalMessage, setEnvironmentalMessage] = useState<string>('')  // Changed to environmentalMessage
     const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL
 
     const handleSubmit = async (e: FormEvent) => {
@@ -34,20 +35,23 @@ const AddProducts: React.FC<AddProductsProps> = ({ onLogOut }) => {
                 description,
                 price,
                 selectedCategory,
-                image_url : imageURL,
-                color: color,
+                color,
                 category_id: selectedCategory,
                 sizes: Object.entries(quantities).map(([sizeId, quantity]) => ({ size_id: sizeId, quantity })),
+                image_urls: imageURLs.filter(url => url !== ''),  // Filter out empty URLs
+                environmental_message: environmentalMessage,  // Changed to environmental_message
             })
             if (response.status === 201) {
                 alert("Product added successfully!");
             }
+            // Reset the form fields
             setCategories([0])
             setName('')
             setDescription('')
             setPrice('')
-            setImageURL('')
+            setImageURLs(['', '', '', ''])
             setColor('')
+            setEnvironmentalMessage('')  // Reset environmental message
             setMessage(response.data.message)
         } catch (error) {
             const axiosError = error as AxiosError<{ message: string }>;
@@ -92,8 +96,15 @@ const AddProducts: React.FC<AddProductsProps> = ({ onLogOut }) => {
     const handleCategoryChange = (value: string) => {
         setSelectedCategory(value)
     }
+
     const handleQuantityChange = (sizeId: string, value: string) => {
         setQuantities((prev) => ({ ...prev, [sizeId]: parseInt(value) || 0 }))
+    }
+
+    const handleImageChange = (index: number, value: string) => {
+        const updatedImageURLs = [...imageURLs]
+        updatedImageURLs[index] = value
+        setImageURLs(updatedImageURLs)
     }
 
     return (
@@ -132,23 +143,15 @@ const AddProducts: React.FC<AddProductsProps> = ({ onLogOut }) => {
                     />
                     <input
                         type="text"
-                        name="imageURL"
-                        value={imageURL}
-                        placeholder="Enter image URL"
-                        className="border border-black p-4 rounded-xl w-full"
-                        onChange={(e) => setImageURL(e.target.value)}
-                    />
-                    <input
-                        type="text"
                         name="color"
                         value={color}
                         placeholder="Enter Color"
                         className="border border-black p-4 rounded-xl w-full"
                         onChange={(e) => setColor(e.target.value)}
                     />
-                    
-                    <div className="">
-                        <h2 className="">Enter Stock Quantities per Size:</h2>
+
+                    <div className="mt-4">
+                        <h2>Enter Stock Quantities per Size:</h2>
                         <div className="grid grid-cols-3 gap-4 mt-2">
                             {sizes.map((size) => (
                                 <div key={size.size_id} className="flex items-center">
@@ -164,6 +167,31 @@ const AddProducts: React.FC<AddProductsProps> = ({ onLogOut }) => {
                                 </div>
                             ))}
                         </div>
+                    </div>
+
+                    <div className="mt-4">
+                        <h2>Upload Images:</h2>
+                        {imageURLs.map((image, index) => (
+                            <input
+                                key={index}
+                                type="text"
+                                name={`imageURL${index}`}
+                                value={image}
+                                placeholder={`Enter image URL ${index + 1}`}
+                                className="border border-black p-4 rounded-xl w-full mt-2"
+                                onChange={(e) => handleImageChange(index, e.target.value)}
+                            />
+                        ))}
+                    </div>
+
+                    <div className="mt-4">
+                        <textarea
+                            name="environmentalMessage"  // Changed name to environmentalMessage
+                            value={environmentalMessage}  // Changed state to environmentalMessage
+                            placeholder="Enter an environmental message (optional)"
+                            className="border border-black p-4 rounded-xl w-full"
+                            onChange={(e) => setEnvironmentalMessage(e.target.value)}  // Changed state setter
+                        />
                     </div>
 
                     <div>

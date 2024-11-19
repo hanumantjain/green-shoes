@@ -16,6 +16,7 @@ interface Product {
   description: string
   price: number
   image_url: string
+  color: string
   category_name: string
   sizes: Size[]
 }
@@ -55,6 +56,7 @@ const Products:React.FC = () => {
                   image={img} 
                   title={product.name} 
                   description={product.description} 
+                  color={product.color}
                   price={product.price} />
             </div>
         ))}

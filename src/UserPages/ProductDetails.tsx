@@ -9,6 +9,7 @@ type CartItem = {
   title: string
   price: number
   size: number
+  color: string
   image: string
 }
 
@@ -46,6 +47,7 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({ addToCart }) => {
         id: product.product_id,
         title: product.name,
         price: product.price,
+        color: product.color,
         size: selectedSize,
         image: product.image_url || img
       })
@@ -76,7 +78,8 @@ const ProductDetails:React.FC<ProductDetailsProps> = ({ addToCart }) => {
         <div className='pl-20 flex flex-col gap-3'>
           <div>
             <h2 className="text-4xl font-bold">{product.name}</h2>
-            <p>{product.price}</p>
+            <p>$ {product.price}</p>
+            <p>{product.color}</p>
           </div>
           <div>
             <h1>Size</h1>
