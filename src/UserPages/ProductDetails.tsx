@@ -1,38 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import img from '../assets/shoes.jpg'; // Default image
+import img from '../assets/shoes.jpg'; // Default image in case no image is found
 import { useParams } from 'react-router-dom';
 import { Navbar } from '../UserComponents/Navbar';
 import axios from 'axios';
+import { useAppDispatch } from '../hooks';
+import { addItem } from '../Features/cart/CartSlice'; // Import addItem action
 
-type CartItem = {
-  id: number;
-  title: string;
-  price: number;
-  size: number;
-  color: string;
-  image: string;
-};
-
-type ProductDetailsProps = {
-  cart: CartItem[];
-  addToCart: (item: CartItem) => void;
-};
-
-const ProductDetails: React.FC<ProductDetailsProps> = ({ addToCart }) => {
+const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [product, setProduct] = useState<any>(null);
-  const [selectedSize, setSelectedSize] = useState<number | null>(null);
+  const [product, setProduct] = useState<any>(null); // Product data state
+  const [selectedSize, setSelectedSize] = useState<number | null>(null); // Selected size state
   const [selectedImage, setSelectedImage] = useState<string>(img); // For image selection
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); // For error message
+  const [success, setSuccess] = useState<string | null>(null); // For success messages
+  const dispatch = useAppDispatch(); // For dispatching actions
+
   const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL;
 
+  // Fetch product details from backend
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(`${backendBaseUrl}/getProducts/${id}`);
         if (response.status === 200) {
           setProduct(response.data);
-          setSelectedImage(response.data.image_urls[0] || img); // Default to the first image
+          setSelectedImage(response.data.image_urls[0] || img); // Default to first image if available
         } else {
           throw new Error('Product not found');
         }
@@ -43,48 +35,82 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ addToCart }) => {
     fetchProduct();
   }, [id, backendBaseUrl]);
 
-  const handleAddToCart = () => {
-    if (selectedSize) {
-      addToCart({
-        id: product.product_id,
-        title: product.name,
-        price: product.price,
-        color: product.color,
+  // Handle adding product to the cart
+  const handleAddToCart = async () => {
+    if (!selectedSize) {
+      setError('Please select a size before adding to the cart.');
+      setSuccess(null);
+      return;
+    }
+  
+    if (!id) {
+      setError('Product ID is missing');
+      setSuccess(null);
+      return;
+    }
+  
+    const userId = '3'; // Hardcoded user ID
+  
+    try {
+      const cartResponse = await axios.post(`${backendBaseUrl}/addToCart`, {
+        userId,
+        productId: id,
         size: selectedSize,
-        image: selectedImage,
+        quantity: 1,
       });
-      alert(`Added ${product.name} - Size ${selectedSize} to cart`);
-      setSelectedSize(null);
-      setError(null);
-    } else {
-      setError('Please select a size');
+  
+      if (cartResponse.status === 200) {
+        setSuccess('Product successfully added to your cart!');
+        setError(null);
+  
+        // Dispatch to add item to Redux cart state
+        dispatch(addItem({
+          id: id,
+          name: product.name,
+          image: product.image_urls[0], // Use the first image
+          size: selectedSize,
+          price: product.price,
+          quantity: 1,
+        }));
+      } else {
+        throw new Error('Failed to add product to cart.');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong.');
+      setSuccess(null);
     }
   };
+  
+  
 
+  // Handle size selection
   const handleSize = (size: number) => {
     setSelectedSize(size);
-    setError(null);
+    setError(null); // Clear any error when size is selected
   };
 
+  // Handle image thumbnail click
   const handleImageClick = (imageUrl: string) => {
     setSelectedImage(imageUrl);
   };
 
+  // If product is not found or is still loading
   if (!product) {
-    return <div>Product not found.</div>; // Handle case where product is null
+    return <div>Loading product details...</div>;
   }
 
   return (
     <div>
       <Navbar />
       <div className="flex px-32 w-full pt-20">
+        {/* Product Images Section */}
         <div className="w-1/2">
           {/* Main Image */}
           <img
             src={selectedImage}
             alt={product?.name || 'Product'}
             className="w-full object-cover"
-            style={{ maxHeight: '400px', objectFit: 'cover' }} // Shorter height for the main image
+            style={{ maxHeight: '400px', objectFit: 'cover' }} // Adjust height and fit for the main image
           />
           {/* Thumbnail Images */}
           <div className="flex gap-4 mt-4">
@@ -101,37 +127,65 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ addToCart }) => {
             )) || <div>No images available</div>}
           </div>
         </div>
+
+        {/* Product Details Section */}
         <div className="pl-20 flex flex-col gap-3">
           <div>
             <h2 className="text-4xl font-bold">{product.name}</h2>
             <p>$ {product.price}</p>
             <p>{product.color}</p>
           </div>
+
+          {/* Size Selection */}
           <div>
             <h1>Size</h1>
             <div className={`flex gap-12 ${error ? 'border border-red-500 p-2' : ''}`}>
-              <div className='flex flex-col gap-5'>
-                <div className={`border border-black p-1.5 px-10 cursor-pointer ${selectedSize === 6 ? 'bg-gray-200' : ''}`} onClick={() => handleSize(6)}>W 6</div>
-                <div className={`border border-black p-1.5 px-10 cursor-pointer ${selectedSize === 7 ? 'bg-gray-200' : ''}`} onClick={() => handleSize(7)}>W 7</div>
-                <div className={`border border-black p-1.5 px-10 cursor-pointer ${selectedSize === 8 ? 'bg-gray-200' : ''}`} onClick={() => handleSize(8)}>W 8</div>
+              <div className="flex flex-col gap-5">
+                {[6, 7, 8].map((size) => (
+                  <div
+                    key={size}
+                    className={`border border-black p-1.5 px-10 cursor-pointer ${
+                      selectedSize === size ? 'bg-gray-200' : ''
+                    }`}
+                    onClick={() => handleSize(size)}
+                  >
+                    W {size}
+                  </div>
+                ))}
               </div>
-              <div className='flex flex-col gap-5'>
-                <div className={`border border-black p-1.5 px-10 cursor-pointer ${selectedSize === 9 ? 'bg-gray-200' : ''}`} onClick={() => handleSize(9)}>W 9</div>
-                <div className={`border border-black p-1.5 px-10 cursor-pointer ${selectedSize === 10 ? 'bg-gray-200' : ''}`} onClick={() => handleSize(10)}>W 10</div>
-                <div className={`border border-black p-1.5 px-10 cursor-pointer ${selectedSize === 11 ? 'bg-gray-200' : ''}`} onClick={() => handleSize(11)}>W 11</div>
+              <div className="flex flex-col gap-5">
+                {[9, 10, 11].map((size) => (
+                  <div
+                    key={size}
+                    className={`border border-black p-1.5 px-10 cursor-pointer ${
+                      selectedSize === size ? 'bg-gray-200' : ''
+                    }`}
+                    onClick={() => handleSize(size)}
+                  >
+                    W {size}
+                  </div>
+                ))}
               </div>
-              <div className='flex flex-col gap-5'>
-                <div className={`border border-black p-1.5 px-10 cursor-pointer ${selectedSize === 12 ? 'bg-gray-200' : ''}`} onClick={() => handleSize(12)}>W 12</div>
-                <div className={`border border-black p-1.5 px-10 cursor-pointer ${selectedSize === 13 ? 'bg-gray-200' : ''}`} onClick={() => handleSize(13)}>W 13</div>
-                <div className={`border border-black p-1.5 px-10 cursor-pointer ${selectedSize === 14 ? 'bg-gray-200' : ''}`} onClick={() => handleSize(14)}>W 14</div>
+              <div className="flex flex-col gap-5">
+                {[12, 13, 14].map((size) => (
+                  <div
+                    key={size}
+                    className={`border border-black p-1.5 px-10 cursor-pointer ${
+                      selectedSize === size ? 'bg-gray-200' : ''
+                    }`}
+                    onClick={() => handleSize(size)}
+                  >
+                    W {size}
+                  </div>
+                ))}
               </div>
             </div>
             {error && <p className="text-red-500 mt-2">{error}</p>}
           </div>
-  
+
+          {/* Product Description */}
           <div>
             <p>{product.description}</p>
-            {/* Display environmental message */}
             {product.environmental_message && (
               <div className="mt-4 p-4 border-t border-gray-200">
                 <h3 className="font-semibold text-green-600">Environmental Impact</h3>
@@ -139,6 +193,11 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ addToCart }) => {
               </div>
             )}
           </div>
+
+          {/* Success Message */}
+          {success && <p className="text-green-500 mt-2">{success}</p>}
+
+          {/* Add to Cart Button */}
           <button
             className="border border-black p-3 rounded-full"
             onClick={handleAddToCart}
@@ -149,6 +208,6 @@ const ProductDetails: React.FC<ProductDetailsProps> = ({ addToCart }) => {
       </div>
     </div>
   );
-}
+};
 
 export default ProductDetails;

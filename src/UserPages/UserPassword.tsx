@@ -21,22 +21,34 @@ export const UserPassword:React.FC = () => {
 
     const handleEmailSubmit = async (e: FormEvent) => {
         e.preventDefault()
-        try{
+        try {
             const response = await axiosInstance.post(`${backendBaseUrl}/userLogin`, {
                 userEmail,
                 userPassword,
             })
-            if(response.status === 200){
+            if (response.status === 200) {
                 navigate('/home', { replace: true })
             }
-
+    
             setResultMessage(response.data.message)
             setUserPassword('')
-
-        }catch (error: any) {
-            setResultMessage(error.response.data.message)
+    
+        } catch (error: any) {
+            console.error('Login Error:', error); // Log error for debugging
+    
+            if (error.response) {
+                // Server-side error (e.g., 400 or 500)
+                setResultMessage(error.response?.data?.message || 'An error occurred. Please try again.')
+            } else if (error.request) {
+                // No response from backend (could be a network error or timeout)
+                setResultMessage('Network error. Please check your connection and try again.')
+            } else {
+                // Error occurred while setting up the request
+                setResultMessage('An unexpected error occurred. Please try again.')
+            }
         }
     }
+    
 
     const handleShowPassword = () => {
         setShowPassword(prevState => !prevState)

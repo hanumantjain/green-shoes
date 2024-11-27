@@ -20,20 +20,11 @@ import About from "./UserPages/About"
 import Cateorgy from "./AdminPages/Cateorgy"
 import Contact from "./UserPages/Contact"
 
-type CartItem = {
-  id: number
-  title: string
-  price: number
-  color: string
-  size: number
-  image: string
-}
 
 const App: React.FC = () => {
   const [isAdminAuthencticated , setIsAdminAuthenticated] = useState<boolean>(
     sessionStorage.getItem('isAdminAuthenticated') === 'true'
   )
-  const [cart, setCart] = useState<CartItem[]>([])
 
   const navigate = useNavigate()
 
@@ -54,9 +45,6 @@ const App: React.FC = () => {
     sessionStorage.removeItem('isAdminAuthenticated')
     navigate('/admin')
   }
-  const addToCart = (item: CartItem) => {
-    setCart((prevCart) => [...prevCart, item]);
-  }
 
   return (
       <div>
@@ -70,8 +58,8 @@ const App: React.FC = () => {
             <Route path='/userSignUp' element={<UserSignUp />}/>
             <Route path='/userPassword' element={<UserPassword />}/>
             <Route path='/products' element={<Products />}/>
-            <Route path='/products/:id' element={<ProductDetails cart={cart} addToCart={addToCart} />}/>
-            <Route path='/cart' element={<Cart cart={cart} />}/>
+            <Route path='/products/:id' element={<ProductDetails />}/>
+            <Route path='/cart' element={<Cart />}/>
             <Route path='/about' element={<About />}/>
             <Route path='/contact' element={<Contact />} />
             <Route path='/profile' element={<Profile />}/>
