@@ -19,6 +19,9 @@ import AddProducts from "./AdminPages/AddProducts"
 import About from "./UserPages/About"
 import Cateorgy from "./AdminPages/Cateorgy"
 import Contact from "./UserPages/Contact"
+import Address from "./UserComponents/Address"
+import Orders from "./UserComponents/Orders"
+import Payment from "./UserComponents/Payment"
 
 
 const App: React.FC = () => {
@@ -49,7 +52,6 @@ const App: React.FC = () => {
   return (
       <div>
           <Routes>
-
             {/* User Routes */}
             <Route path='/' element={<FirstPage />} />
             <Route path='/home' element={<Home />} />
@@ -62,7 +64,12 @@ const App: React.FC = () => {
             <Route path='/cart' element={<Cart />}/>
             <Route path='/about' element={<About />}/>
             <Route path='/contact' element={<Contact />} />
-            <Route path='/profile' element={<Profile />}/>
+            <Route path='/profile' element={<Profile />}>
+              <Route path='address' element={<Address />}/>
+              <Route path='orders' element={<Orders />}/>
+              <Route path='payment' element={<Payment />}/>
+            </Route>
+
 
             {/* Admin Routes */}
             <Route path="/admin" element={<AdminLogin onLogin={handleAdminLogIn} />}/>

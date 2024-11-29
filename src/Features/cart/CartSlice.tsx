@@ -1,5 +1,6 @@
-// CartSlice.ts (or wherever your cart slice is)
+// CartSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import Cookies from 'js-cookie';
 
 interface CartItem {
   id: string;
@@ -15,10 +16,22 @@ interface CartState {
   totalAmount: number;
 }
 
-const initialState: CartState = {
-  items: [],
-  totalAmount: 0,
+// Load initial state from cookies
+const loadCartFromCookies = (): CartState => {
+  const items = Cookies.get('cartItems');
+  const totalAmount = Cookies.get('cartTotalAmount');
+  return {
+    items: items ? JSON.parse(items) : [],
+    totalAmount: totalAmount ? parseFloat(totalAmount) : 0,
+  };
 };
+
+const saveCartToCookies = (state: CartState) => {
+  Cookies.set('cartItems', JSON.stringify(state.items), { expires: 7 });
+  Cookies.set('cartTotalAmount', state.totalAmount.toString(), { expires: 7 });
+};
+
+const initialState: CartState = loadCartFromCookies();
 
 const cartSlice = createSlice({
   name: 'cart',
@@ -35,25 +48,30 @@ const cartSlice = createSlice({
       }
 
       state.totalAmount = state.items.reduce((total, item) => total + item.price * item.quantity, 0);
+      saveCartToCookies(state); // Save to cookies
     },
     removeItem(state, action: PayloadAction<string>) {
       const id = action.payload;
       const itemToRemove = state.items.find((item) => item.id === id);
-      
+
       if (itemToRemove) {
         if (itemToRemove.quantity > 1) {
-          // Decrease the quantity
           itemToRemove.quantity -= 1;
         } else {
-          // Remove item if quantity is 1
           state.items = state.items.filter((item) => item.id !== id);
         }
       }
-      
+
       state.totalAmount = state.items.reduce((total, item) => total + item.price * item.quantity, 0);
+      saveCartToCookies(state); // Save to cookies
+    },
+    clearCart(state) {
+      state.items = [];
+      state.totalAmount = 0;
+      saveCartToCookies(state); // Clear cookies
     },
   },
 });
 
-export const { addItem, removeItem } = cartSlice.actions;
+export const { addItem, removeItem, clearCart } = cartSlice.actions;
 export default cartSlice.reducer;

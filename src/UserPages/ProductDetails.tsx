@@ -1,30 +1,32 @@
-import React, { useEffect, useState } from 'react';
-import img from '../assets/shoes.jpg'; // Default image in case no image is found
-import { useParams } from 'react-router-dom';
-import { Navbar } from '../UserComponents/Navbar';
-import axios from 'axios';
-import { useAppDispatch } from '../hooks';
-import { addItem } from '../Features/cart/CartSlice'; // Import addItem action
+import React, { useEffect, useState } from 'react'
+import img from '../assets/shoes.jpg'
+import { useParams } from 'react-router-dom'
+import { Navbar } from '../UserComponents/Navbar'
+import axios from 'axios'
+import { useAppDispatch } from '../hooks'
+import { addItem } from '../Features/cart/CartSlice'
+import { useSelector } from 'react-redux'
+import { RootState } from '../store'
 
 const ProductDetails: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const [product, setProduct] = useState<any>(null); // Product data state
-  const [selectedSize, setSelectedSize] = useState<number | null>(null); // Selected size state
-  const [selectedImage, setSelectedImage] = useState<string>(img); // For image selection
-  const [error, setError] = useState<string | null>(null); // For error message
-  const [success, setSuccess] = useState<string | null>(null); // For success messages
-  const dispatch = useAppDispatch(); // For dispatching actions
+  const { id } = useParams<{ id: string }>()
+  const [product, setProduct] = useState<any>(null)
+  const [selectedSize, setSelectedSize] = useState<number | null>(null)
+  const [selectedImage, setSelectedImage] = useState<string>(img)
+  const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<string | null>(null)
+  const dispatch = useAppDispatch()
 
   const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL;
+  const userId = useSelector((state: RootState) => state.user.userId)
 
-  // Fetch product details from backend
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(`${backendBaseUrl}/getProducts/${id}`);
         if (response.status === 200) {
           setProduct(response.data);
-          setSelectedImage(response.data.image_urls[0] || img); // Default to first image if available
+          setSelectedImage(response.data.image_urls[0] || img)
         } else {
           throw new Error('Product not found');
         }
@@ -35,7 +37,6 @@ const ProductDetails: React.FC = () => {
     fetchProduct();
   }, [id, backendBaseUrl]);
 
-  // Handle adding product to the cart
   const handleAddToCart = async () => {
     if (!selectedSize) {
       setError('Please select a size before adding to the cart.');
@@ -49,8 +50,6 @@ const ProductDetails: React.FC = () => {
       return;
     }
   
-    const userId = '3'; // Hardcoded user ID
-  
     try {
       const cartResponse = await axios.post(`${backendBaseUrl}/addToCart`, {
         userId,
@@ -63,11 +62,11 @@ const ProductDetails: React.FC = () => {
         setSuccess('Product successfully added to your cart!');
         setError(null);
   
-        // Dispatch to add item to Redux cart state
+        
         dispatch(addItem({
           id: id,
           name: product.name,
-          image: product.image_urls[0], // Use the first image
+          image: product.image_urls[0],
           size: selectedSize,
           price: product.price,
           quantity: 1,
@@ -82,19 +81,15 @@ const ProductDetails: React.FC = () => {
   };
   
   
-
-  // Handle size selection
   const handleSize = (size: number) => {
     setSelectedSize(size);
-    setError(null); // Clear any error when size is selected
+    setError(null); 
   };
 
-  // Handle image thumbnail click
   const handleImageClick = (imageUrl: string) => {
     setSelectedImage(imageUrl);
   };
 
-  // If product is not found or is still loading
   if (!product) {
     return <div>Loading product details...</div>;
   }
@@ -103,16 +98,13 @@ const ProductDetails: React.FC = () => {
     <div>
       <Navbar />
       <div className="flex px-32 w-full pt-20">
-        {/* Product Images Section */}
         <div className="w-1/2">
-          {/* Main Image */}
           <img
             src={selectedImage}
             alt={product?.name || 'Product'}
             className="w-full object-cover"
-            style={{ maxHeight: '400px', objectFit: 'cover' }} // Adjust height and fit for the main image
+            style={{ maxHeight: '400px', objectFit: 'cover' }}
           />
-          {/* Thumbnail Images */}
           <div className="flex gap-4 mt-4">
             {product.image_urls?.map((imageUrl: string, index: number) => (
               <img
@@ -128,7 +120,6 @@ const ProductDetails: React.FC = () => {
           </div>
         </div>
 
-        {/* Product Details Section */}
         <div className="pl-20 flex flex-col gap-3">
           <div>
             <h2 className="text-4xl font-bold">{product.name}</h2>
@@ -136,7 +127,6 @@ const ProductDetails: React.FC = () => {
             <p>{product.color}</p>
           </div>
 
-          {/* Size Selection */}
           <div>
             <h1>Size</h1>
             <div className={`flex gap-12 ${error ? 'border border-red-500 p-2' : ''}`}>
@@ -182,8 +172,7 @@ const ProductDetails: React.FC = () => {
             </div>
             {error && <p className="text-red-500 mt-2">{error}</p>}
           </div>
-
-          {/* Product Description */}
+          
           <div>
             <p>{product.description}</p>
             {product.environmental_message && (
@@ -194,10 +183,9 @@ const ProductDetails: React.FC = () => {
             )}
           </div>
 
-          {/* Success Message */}
+
           {success && <p className="text-green-500 mt-2">{success}</p>}
 
-          {/* Add to Cart Button */}
           <button
             className="border border-black p-3 rounded-full"
             onClick={handleAddToCart}
