@@ -4,10 +4,11 @@ import icon from '../assets/icon.png'
 import { FaUser, FaShoppingCart } from "react-icons/fa"
 import { useSelector } from 'react-redux'
 import { RootState } from '../store'
+import Logout from './Logout'
 
 export const Navbar: React.FC = () => {
-  const { firstName } = useSelector((state: RootState) => state.user)
-  const { items } = useSelector((state: RootState) => state.cart)
+  const firstName = useSelector((state: RootState) => state.user.firstName)
+  const items = useSelector((state: RootState) => state.cart.items)
 
   return (
     <div className='h-[93px] bg-white flex'>
@@ -25,16 +26,9 @@ export const Navbar: React.FC = () => {
           <Link to='/contact' className='text-[19px]'>Contact</Link>
         </div>
         <div className='flex gap-6 text-2xl'>
-          <Link to='/profile'><FaUser /></Link>
-
-          {/* Conditional Rendering */}
-          {firstName ? (
-            <span className='text-lg font-medium'>Hi, {firstName}</span>
-          ) : (
-            <span className='text-lg font-medium'>Hello, Guest</span>
-          )}
-
-  <Link to='/cart' className='relative'>
+            <span className='text-lg font-medium'>Hi, {firstName} </span>
+            <Link to='/profile'><FaUser /></Link>
+          <Link to='/cart' className='relative'>
             <FaShoppingCart />
             {items.length > 0 && (
               <span className='absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center'>
@@ -42,6 +36,7 @@ export const Navbar: React.FC = () => {
               </span>
             )}
           </Link>
+          <Logout />
         </div>
       </div>
     </div>

@@ -22,6 +22,8 @@ import Contact from "./UserPages/Contact"
 import Address from "./UserComponents/Address"
 import Orders from "./UserComponents/Orders"
 import Payment from "./UserComponents/Payment"
+import AddressList from "./UserComponents/AddressList"
+import Checkout from "./UserPages/Checkout"
 
 
 const App: React.FC = () => {
@@ -64,10 +66,12 @@ const App: React.FC = () => {
             <Route path='/cart' element={<Cart />}/>
             <Route path='/about' element={<About />}/>
             <Route path='/contact' element={<Contact />} />
+            <Route path='/checkout' element={<Checkout />} />
             <Route path='/profile' element={<Profile />}>
               <Route path='address' element={<Address />}/>
               <Route path='orders' element={<Orders />}/>
               <Route path='payment' element={<Payment />}/>
+              <Route path='add' element={<AddressList />}/>
             </Route>
 
 

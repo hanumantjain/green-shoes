@@ -19,7 +19,8 @@ const ProductDetails: React.FC = () => {
 
   const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL;
   const userId = useSelector((state: RootState) => state.user.userId)
-
+  console.log(backendBaseUrl, backendBaseUrl)
+  console.log(userId)
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -52,7 +53,7 @@ const ProductDetails: React.FC = () => {
   
     try {
       const cartResponse = await axios.post(`${backendBaseUrl}/addToCart`, {
-        userId,
+        user_id: userId,
         productId: id,
         size: selectedSize,
         quantity: 1,
@@ -61,9 +62,9 @@ const ProductDetails: React.FC = () => {
       if (cartResponse.status === 200) {
         setSuccess('Product successfully added to your cart!');
         setError(null);
-  
-        
+
         dispatch(addItem({
+          product_id:id,
           id: id,
           name: product.name,
           image: product.image_urls[0],

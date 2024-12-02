@@ -1,15 +1,14 @@
-// CartCard.tsx
-import React from 'react';
+import React from 'react'
 
 interface CartCardProps {
-  id: string;
-  title: string;
-  image: string;
-  size: number;
-  price: number;
-  quantity: number;
-  onAdd: () => void;
-  onRemove: () => void;
+  id: string
+  title: string
+  image: string
+  size: number
+  price: number
+  quantity: number
+  onAdd: () => void
+  onRemove: () => void
 }
 
 const CartCard: React.FC<CartCardProps> = ({
