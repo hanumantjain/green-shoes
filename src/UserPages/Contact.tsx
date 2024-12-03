@@ -3,19 +3,22 @@ import { Navbar } from '../UserComponents/Navbar'
 import axios, { AxiosError } from 'axios'
 
 const Contact:React.FC = () => {
+    const [name, setName] = useState<string>('')
     const [message, setMessage] = useState<string>('')
-    const [lastName, setLastName] = useState<string>('')
+    const [email, setEmail] = useState<string>('')
     const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL
 
   const handleContact = async (e: FormEvent) => {
     e.preventDefault()
     try{
-      await axios.post(`${backendBaseUrl}/contact`, {
-          message,
-          lastName
-      })
+      // await axios.post(`${backendBaseUrl}/contact`, {
+      //     name,
+      //     message,
+      //     email
+      // })
+      setName('')
       setMessage('')
-      setLastName('')
+      setEmail('')
 
   }catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
@@ -39,11 +42,20 @@ const Contact:React.FC = () => {
           <form onSubmit={handleContact} className='flex flex-col gap-6 w-1/3'>
             <input
                 type="text"
-                name="firstName"
-                value={message}
-                placeholder="Enter first name"
+                name="name"
+                value={name}
+                placeholder="Enter name"
                 className="border border-black p-4 rounded-xl w-full"
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
+                required
+            />
+            <input
+                type="email"
+                name="email"
+                value={email}
+                placeholder="Enter Email"
+                className="border border-black p-4 rounded-xl w-full"
+                onChange={(e) => setEmail(e.target.value)}
                 required
             />
             <textarea

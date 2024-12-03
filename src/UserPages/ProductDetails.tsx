@@ -19,8 +19,33 @@ const ProductDetails: React.FC = () => {
 
   const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL;
   const userId = useSelector((state: RootState) => state.user.userId)
-  console.log(backendBaseUrl, backendBaseUrl)
-  console.log(userId)
+
+  // Function to handle cart for guest users using localStorage
+  const handleGuestCart = (productId: string, size: number, productData: any) => {
+    let guestCart = JSON.parse(localStorage.getItem('guestCart') || '[]');
+    
+    const existingItem = guestCart.find((item: any) => item.productId === productId && item.size === size);
+    
+    if (existingItem) {
+      // If item already exists, increase quantity
+      existingItem.quantity += 1;
+    } else {
+      // If item does not exist, add to the cart
+      guestCart.push({
+        productId,
+        size,
+        name: productData.name,
+        image: productData.image_urls[0],
+        price: productData.price,
+        quantity: 1
+      });
+    }
+
+    localStorage.setItem('guestCart', JSON.stringify(guestCart));
+    setSuccess('Product added to your cart!');
+    setError(null);
+  };
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -50,7 +75,13 @@ const ProductDetails: React.FC = () => {
       setSuccess(null);
       return;
     }
-  
+
+    // Check if the user is a guest
+    if (userId === 'guest') {
+      handleGuestCart(id, selectedSize, product);
+      return;
+    }
+
     try {
       const cartResponse = await axios.post(`${backendBaseUrl}/addToCart`, {
         user_id: userId,
@@ -64,7 +95,7 @@ const ProductDetails: React.FC = () => {
         setError(null);
 
         dispatch(addItem({
-          product_id:id,
+          product_id: id,
           id: id,
           name: product.name,
           image: product.image_urls[0],
@@ -80,7 +111,6 @@ const ProductDetails: React.FC = () => {
       setSuccess(null);
     }
   };
-  
   
   const handleSize = (size: number) => {
     setSelectedSize(size);
@@ -183,7 +213,6 @@ const ProductDetails: React.FC = () => {
               </div>
             )}
           </div>
-
 
           {success && <p className="text-green-500 mt-2">{success}</p>}
 
