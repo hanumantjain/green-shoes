@@ -1,11 +1,14 @@
 import React, { FormEvent, useState } from 'react'
 import axios, {AxiosError} from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { setUser } from '../Features/cart/UserSlice'
 
 export const SignIn:React.FC = () => {
     const[userEmail, setUserEmail] = useState<string>('')
     const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL
     const navigate = useNavigate()
+    const dispatch = useDispatch();
 
     const handleEmailSubmit = async (e: FormEvent) => {
         e.preventDefault()
@@ -28,8 +31,14 @@ export const SignIn:React.FC = () => {
     }
 
     const handleGuest = () => {
-        navigate('/home')
-    }
+        dispatch(
+            setUser({
+                firstName: 'Guest',
+                userId: 'guest',
+            })
+        )
+        navigate('/home', { replace: true });
+    };
 
 
   return (

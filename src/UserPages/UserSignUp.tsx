@@ -1,6 +1,6 @@
 import React, { FormEvent, useState } from 'react'
 import axios, { AxiosError } from 'axios'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import view from '../assets/view.png'
 import hide from '../assets/hide.png'
 
@@ -18,6 +18,7 @@ const UserSignUp:React.FC = () => {
     const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL
 
     const location = useLocation()
+    const navigate = useNavigate()
     const userEmail = (location.state as LocationState)?.userEmail
 
 
@@ -39,6 +40,7 @@ const UserSignUp:React.FC = () => {
             setLastName('')
             setUserPassword('')
             setConfirmUserPassword('')
+            navigate('/userSignIn')
         }catch (error) {
             const axiosError = error as AxiosError<{ message: string }>;
             if (axiosError.response) {

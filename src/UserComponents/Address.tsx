@@ -1,5 +1,7 @@
 import React, { FormEvent, useState } from 'react';
 import axios from 'axios';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
 
 const AddressForm: React.FC<{
   addressType: string;
@@ -54,6 +56,10 @@ const AddressForm: React.FC<{
 );
 
 const Address: React.FC = () => {
+  // Get user_id from Redux store
+  const userId = useSelector((state: RootState) => state.user.userId);
+
+  // State to hold form data for Home, Billing, and Shipping addresses
   const [homeAddress, setHomeAddress] = useState({
     street1: '',
     street2: '',
@@ -105,31 +111,40 @@ const Address: React.FC = () => {
     } else {
       addressData = shippingAddress;
     }
-  
-    console.log('Submitting data to backend:', { type: addressType, ...addressData });
-  
+
+    // Add user_id and addressType to the data being sent
+    const dataToSubmit = { ...addressData, user_id: userId, address_type: addressType };
+    console.log('Data to be sent to the backend:', dataToSubmit);
+
     try {
-      await axios.post(`${backendBaseUrl}/address`, { type: addressType, ...addressData });
-      alert(`${addressType} Address updated successfully`);
+      // Send POST request to the backend to add the address
+      await axios.post(`${backendBaseUrl}/addAddress/${userId}`, dataToSubmit);
+      alert(`${addressType} Address added successfully`);
     } catch (error) {
       console.error(`Failed to update ${addressType} Address:`, error);
+      alert('Failed to update address');
     }
   };
 
   return (
     <div className="flex flex-col gap-8">
+      {/* Form for Home Address */}
       <AddressForm
         addressType="Home"
         onSubmit={(e) => handleSubmit(e, 'Home')}
         formData={homeAddress}
         onChange={(e) => handleFormChange(e, 'Home')}
       />
+      
+      {/* Form for Billing Address */}
       <AddressForm
         addressType="Billing"
         onSubmit={(e) => handleSubmit(e, 'Billing')}
         formData={billingAddress}
         onChange={(e) => handleFormChange(e, 'Billing')}
       />
+      
+      {/* Form for Shipping Address */}
       <AddressForm
         addressType="Shipping"
         onSubmit={(e) => handleSubmit(e, 'Shipping')}

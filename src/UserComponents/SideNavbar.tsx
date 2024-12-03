@@ -29,6 +29,15 @@ const SideNavbar: React.FC = () => {
       >
         Payment Mode
       </NavLink>
+      <NavLink
+        to="add"
+        className={({ isActive }) =>
+          `cursor-pointer hover:underline ${isActive ? 'font-bold' : ''}`
+        }
+      >
+        Add
+      </NavLink>
+      
     </div>
   )
 }

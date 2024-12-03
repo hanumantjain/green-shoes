@@ -27,7 +27,6 @@ const userSlice = createSlice({
       state.firstName = null;
       state.userId = null;
 
-
       Cookies.remove('firstName');
       Cookies.remove('userId');
     },
