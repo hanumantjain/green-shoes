@@ -18,6 +18,7 @@ import AddAdmin from "./AdminComponents/AddAdmin"
 import AddProducts from "./AdminPages/AddProducts"
 import About from "./UserPages/About"
 import Cateorgy from "./AdminPages/Cateorgy"
+import Promotion from "./AdminPages/Promotion"
 import Contact from "./UserPages/Contact"
 import Address from "./UserComponents/Address"
 import Orders from "./UserComponents/Orders"
@@ -93,6 +94,16 @@ const App: React.FC = () => {
               </AdminPrivateRoute>
             }/>
             <Route path="/category" element={
+              <AdminPrivateRoute isAuthencticated={isAdminAuthencticated}>
+                <Cateorgy onLogOut={handleAdminLogOut}/>
+              </AdminPrivateRoute>
+            }/>
+            <Route path="/managePromotions" element={
+              <AdminPrivateRoute isAuthencticated={isAdminAuthencticated}>
+                <Promotion onLogOut={handleAdminLogOut}/>
+              </AdminPrivateRoute>
+            }/>
+            <Route path="/addPromotion" element={
               <AdminPrivateRoute isAuthencticated={isAdminAuthencticated}>
                 <Cateorgy onLogOut={handleAdminLogOut}/>
               </AdminPrivateRoute>
