@@ -13,7 +13,7 @@ export const Navbar:React.FC<NavbarProps> = ({ onLogOut }) => {
         <div className='w-full flex items-center justify-around'>
             <div className='flex justify-center items-center'>
                 <img src={icon} alt="icon" className='w-28' />
-                <h1 className='text-4xl font-bold'>PRAK</h1>
+                <h1 className='text-4xl font-bold'>Admin-PRAK</h1>
             </div>
             <div className='flex gap-10 font-semibold'>
                 <Link to='/adminHome' className='text-[19px]'>Home</Link>
