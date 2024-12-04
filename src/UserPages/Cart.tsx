@@ -77,11 +77,11 @@ const Cart: React.FC = () => {
             <h1>${cart.totalAmount}</h1>
           </div>
           <div className="flex justify-between">
-            <h1>Discount</h1>
-            <h1>${cart.totalAmount}</h1>
+            <h1>Delivery Fee</h1>
+            <h1>$0</h1>
           </div>
           <div className="flex justify-between">
-            <h1>Delivery Fee</h1>
+            <h1>Tax</h1>
             <h1>$0</h1>
           </div>
           <hr className=''/>

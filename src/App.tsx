@@ -25,6 +25,7 @@ import Checkout from "./UserPages/Checkout"
 import GuestCheckout from "./UserPages/GuestCheckout"
 import UserInfo from "./UserComponents/UserInfo"
 import AddressList from "./UserComponents/AddressList"
+import Promotion from "./AdminPages/Promotion"
 
 
 const App: React.FC = () => {
@@ -95,6 +96,16 @@ const App: React.FC = () => {
               </AdminPrivateRoute>
             }/>
             <Route path="/category" element={
+              <AdminPrivateRoute isAuthencticated={isAdminAuthencticated}>
+                <Cateorgy onLogOut={handleAdminLogOut}/>
+              </AdminPrivateRoute>
+            }/>
+            <Route path="/managePromotions" element={
+              <AdminPrivateRoute isAuthencticated={isAdminAuthencticated}>
+                <Promotion onLogOut={handleAdminLogOut}/>
+              </AdminPrivateRoute>
+            }/>
+            <Route path="/addPromotion" element={
               <AdminPrivateRoute isAuthencticated={isAdminAuthencticated}>
                 <Cateorgy onLogOut={handleAdminLogOut}/>
               </AdminPrivateRoute>

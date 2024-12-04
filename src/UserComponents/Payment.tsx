@@ -146,8 +146,8 @@ const PaymentDetailsPage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-3xl font-semibold">Payment Details</h2>
+    <div className="container mx-auto p-4 flex flex-col justify-center items-center">
+      <h2 className="text-2xl font-bold text-center">Payment Details</h2>
       {successMessage && <p className="text-green-500">{successMessage}</p>}
 
       <div className="mt-4">

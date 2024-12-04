@@ -1,4 +1,3 @@
-// CartSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState } from '../../store';
@@ -81,6 +80,8 @@ export const updateCartItemQuantity = createAsyncThunk(
       throw new Error('User not logged in');
     }
 
+    const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL;
+
     if (userId === 'guest') {
       // Handle guest cart in localStorage
       let guestCart = getGuestCart();
@@ -111,10 +112,8 @@ export const updateCartItemQuantity = createAsyncThunk(
       }
 
       setGuestCart(guestCart);
-
       return { productId: payload.productId, size: payload.size, quantity: payload.quantity };
     }
-    const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL;
 
     // For logged-in users, make a server request
     if (payload.quantity === 0) {

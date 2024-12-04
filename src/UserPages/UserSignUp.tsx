@@ -11,6 +11,7 @@ interface LocationState{
 const UserSignUp:React.FC = () => {
     const [firstName, setFirstName] = useState<string>('')
     const [lastName, setLastName] = useState<string>('')
+    const [phoneNumber, setPhoneNumber] = useState<string>('')
     const [userPassword, setUserPassword] = useState<string>('')
     const [confirmUserPassword, setConfirmUserPassword] = useState<string>('')
     const [message, setMessage] = useState<string>('')
@@ -25,23 +26,35 @@ const UserSignUp:React.FC = () => {
     const handleUserSignUp = async (e: FormEvent) => {
         e.preventDefault()
         setMessage('')
+        
+        // Validate password match
         if(userPassword !== confirmUserPassword){
             setMessage('Password do not match')
             return
         }
-        try{
+    
+        try {
+            // Send the signup request
             await axios.post(`${backendBaseUrl}/userSignUp`, {
                 firstName,
                 lastName,
                 userEmail,
+                phoneNumber,
                 userPassword
             })
+    
+            // Reset form fields
             setFirstName('')
             setLastName('')
             setUserPassword('')
+            setPhoneNumber('')
             setConfirmUserPassword('')
-            navigate('/userSignIn')
-        }catch (error) {
+    
+            // Navigate to '/userPassword' page with email as state
+            navigate('/userPassword', { state: { userEmail } })
+            
+        } catch (error) {
+            // Handle errors
             const axiosError = error as AxiosError<{ message: string }>;
             if (axiosError.response) {
                 setMessage(axiosError.response.data.message)
@@ -80,6 +93,15 @@ const UserSignUp:React.FC = () => {
                             required
                         />
                     </div>
+                    <input
+                        type='number'
+                        name="phoneNumber"
+                        value={phoneNumber}
+                        placeholder="Enter your Phone"
+                        required
+                        className="border border-black p-4 rounded-xl w-full"
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        />
                     <input
                         type='password'
                         name="userPassword"

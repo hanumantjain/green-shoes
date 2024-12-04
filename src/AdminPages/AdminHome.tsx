@@ -20,16 +20,11 @@ const AdminHome: React.FC<AdminHomeProps> = ({ onLogOut }) => {
                             Add New Product
                         </Link>
                         <Link to='/category' className='w-1/4 border border-black p-4 cursor-pointer'>
-                            Categorize Product
+                            Categorize Product and Edit
                         </Link>
-                    </div>
-                </div>
-                <div>
-                    <h1>Promotions and Discounts</h1>
-                    <div className='flex gap-10 text-center py-10'>
-                        <div className='w-full border border-black p-4 cursor-pointer'>
+                        <Link to='/managePromotions' className='w-1/4 border border-black p-4 cursor-pointer'>
                             Manage Promotions
-                        </div>
+                        </Link>
                     </div>
                 </div>
             </div>
