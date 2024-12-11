@@ -8,6 +8,7 @@ import Logout from './Logout'
 
 export const Navbar: React.FC = () => {
   const firstName = useSelector((state: RootState) => state.user.firstName)
+  const userId = useSelector((state: RootState) => state.user.userId) // Assuming there's an id field for the user
   const items = useSelector((state: RootState) => state.cart.items)
 
   return (
@@ -26,8 +27,18 @@ export const Navbar: React.FC = () => {
           <Link to='/contact' className='text-[19px]'>Contact</Link>
         </div>
         <div className='flex gap-6 text-2xl'>
-            <span className='text-lg font-medium'>Hi, {firstName} </span>
-            <Link to='/profile'><FaUser /></Link>
+          <span className='text-lg font-medium'>Hi, {firstName} </span>
+
+          {userId !== "guest" ? (
+            <Link to='/profile'>
+              <FaUser />
+            </Link>
+          ) : (
+            <span className='cursor-not-allowed text-gray-500'>
+              <FaUser />
+            </span>
+          )}
+
           <Link to='/cart' className='relative'>
             <FaShoppingCart />
             {items.length > 0 && (

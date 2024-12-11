@@ -1,10 +1,17 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 
 const SideNavbar: React.FC = () => {
+  const navigate = useNavigate()
+
+  const handleClick =() => {
+    navigate('/profile')
+  }
   return (
-    <div className="flex flex-col gap-3 pl-10 pt-10">
-      <h1 className="pb-10 text-xl font-medium">Hello!</h1>
+    <div className="flex flex-col gap-6 pl-10 pt-10 font-bold">
+      <div onClick={handleClick} className=' hover:underline cursor-pointer'>
+        User
+      </div>
       <NavLink
         to="orders"
         className={({ isActive }) =>
@@ -14,7 +21,7 @@ const SideNavbar: React.FC = () => {
         Orders
       </NavLink>
       <NavLink
-        to="address"
+        to="add"
         className={({ isActive }) =>
           `cursor-pointer hover:underline ${isActive ? 'font-bold' : ''}`
         }
@@ -28,14 +35,6 @@ const SideNavbar: React.FC = () => {
         }
       >
         Payment Mode
-      </NavLink>
-      <NavLink
-        to="add"
-        className={({ isActive }) =>
-          `cursor-pointer hover:underline ${isActive ? 'font-bold' : ''}`
-        }
-      >
-        Add
       </NavLink>
       
     </div>
