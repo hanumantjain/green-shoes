@@ -10,7 +10,6 @@ const Profile: React.FC = () => {
       <div>
         <Navbar />
       </div>
-      {/* Layout with Sticky Sidebar and Main Content */}
       <div className="w-full flex">
         <div className="w-1/6 sticky top-0 h-screen">
           <SideNavbar />

@@ -13,6 +13,7 @@ const Cart: React.FC = () => {
   const cart = useAppSelector((state: RootState) => state.cart);
   const dispatch = useAppDispatch();
   const userId = useSelector((state: RootState) => state.user.userId);
+  const checkoutRoute = userId === 'guest' ? '/guest-checkout' : '/checkout'
 
   useEffect(() => {
     if (userId) {
@@ -75,8 +76,21 @@ const Cart: React.FC = () => {
             <h1>Subtotal</h1>
             <h1>${cart.totalAmount}</h1>
           </div>
-          <div className="flex justify-center items-center">
-            <Link to='/checkout' className="bg-white px-8 py-2 rounded-full">Go to Checkout</Link>
+          <div className="flex justify-between">
+            <h1>Delivery Fee</h1>
+            <h1>$0</h1>
+          </div>
+          <div className="flex justify-between">
+            <h1>Tax</h1>
+            <h1>$0</h1>
+          </div>
+          <hr className=''/>
+          <div className="flex justify-between">
+            <h1>Total</h1>
+            <h1>${cart.totalAmount}</h1>
+          </div>
+          <div className="flex justify-center items-center pt-5">
+          <Link to={checkoutRoute} className="bg-white px-12 py-2 rounded-full">Go to Checkout</Link>
           </div>
         </div>
       </div>

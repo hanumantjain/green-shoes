@@ -1,4 +1,3 @@
-// CartSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { RootState } from '../../store';
@@ -21,6 +20,17 @@ interface CartState {
   error: string | null;
 }
 
+// Utility to get guest cart from localStorage
+const getGuestCart = (): CartItem[] => {
+  const guestCart = localStorage.getItem('guestCart');
+  return guestCart ? JSON.parse(guestCart) : [];
+};
+
+// Utility to set guest cart in localStorage
+const setGuestCart = (cart: CartItem[]) => {
+  localStorage.setItem('guestCart', JSON.stringify(cart));
+};
+
 // Get the user_id from cookies
 const getUserId = (): string | null => {
   return Cookies.get('userId') || null; // Retrieve user_id from cookies
@@ -29,9 +39,16 @@ const getUserId = (): string | null => {
 // Async thunk to fetch cart items from the server
 export const fetchCartItems = createAsyncThunk('cart/fetchCartItems', async () => {
   const userId = getUserId();
+
   if (!userId) {
     throw new Error('User not logged in');
   }
+
+  if (userId === 'guest') {
+    // For guest user, get cart items from localStorage
+    return getGuestCart();
+  }
+
   const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL;
   const response = await fetch(`${backendBaseUrl}/getCart?user_id=${userId}`);
   if (!response.ok) {
@@ -57,8 +74,7 @@ export const updateCartItemQuantity = createAsyncThunk(
     payload: { productId: string; size: number; quantity: number },
     { getState }
   ) => {
-    // Access the userId from the user slice in RootState
-    const { userId } = (getState() as RootState).user;  // Make sure to access userId from the correct state
+    const { userId } = (getState() as RootState).user;
 
     if (!userId) {
       throw new Error('User not logged in');
@@ -66,14 +82,47 @@ export const updateCartItemQuantity = createAsyncThunk(
 
     const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL;
 
-    // If quantity is 0, remove the item from the cart
+    if (userId === 'guest') {
+      // Handle guest cart in localStorage
+      let guestCart = getGuestCart();
+
+      if (payload.quantity === 0) {
+        // Remove item from guest cart
+        guestCart = guestCart.filter(
+          item => !(item.id === payload.productId && item.size === payload.size)
+        );
+      } else {
+        const existingItem = guestCart.find(
+          item => item.id === payload.productId && item.size === payload.size
+        );
+
+        if (existingItem) {
+          existingItem.quantity = payload.quantity;
+        } else {
+          guestCart.push({
+            product_id: payload.productId,
+            id: payload.productId,
+            name: 'Unknown Product', // Replace with product name if available
+            image: '', // Replace with product image if available
+            size: payload.size,
+            price: 0, // Replace with product price if available
+            quantity: payload.quantity,
+          });
+        }
+      }
+
+      setGuestCart(guestCart);
+      return { productId: payload.productId, size: payload.size, quantity: payload.quantity };
+    }
+
+    // For logged-in users, make a server request
     if (payload.quantity === 0) {
       await axios.post(`${backendBaseUrl}/removeCartItem`, {
         user_id: userId,
         product_id: payload.productId,
         size: payload.size,
       });
-      return { productId: payload.productId, size: payload.size, quantity: 0 }; // Indicate removal
+      return { productId: payload.productId, size: payload.size, quantity: 0 };
     } else {
       await axios.post(`${backendBaseUrl}/updateCart`, {
         user_id: userId,
@@ -84,7 +133,7 @@ export const updateCartItemQuantity = createAsyncThunk(
       return { productId: payload.productId, size: payload.size, quantity: payload.quantity };
     }
   }
-)
+);
 
 const initialState: CartState = {
   items: [],

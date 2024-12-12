@@ -11,6 +11,8 @@ const AddressList: React.FC = () => {
   const [error, setError] = useState<string>('');
   const [selectedAddress, setSelectedAddress] = useState<any | null>(null); 
   const [editFormData, setEditFormData] = useState<any>({});
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Modal state
+  const [currentAddressType, setCurrentAddressType] = useState<string | null>(null); // For selecting address type
 
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -38,9 +40,11 @@ const AddressList: React.FC = () => {
   }, [userId, backendBaseUrl]);
 
   // Handler to open the edit form with the selected address's data
-  const handleEditClick = (address: any) => {
+  const handleAddEditClick = (addressType: string, address: any | null) => {
+    setCurrentAddressType(addressType);
     setSelectedAddress(address);
-    setEditFormData({ ...address });
+    setEditFormData(address || { address_type: addressType }); // Initialize with address or empty data
+    setIsModalOpen(true); // Open the modal
   };
 
   // Handler to update the form data when user changes it
@@ -49,20 +53,42 @@ const AddressList: React.FC = () => {
     setEditFormData((prevData: any) => ({ ...prevData, [name]: value }));
   };
 
-  // Submit the form to update the address
+  // Submit the form to update the address or create a new one
   const handleEditFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const formData = {
+      ...editFormData,
+      user_id: userId,
+    };
+
+    // Validate the form fields
+    if (!formData.street1 || !formData.city || !formData.state || !formData.zip || !formData.country) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
     try {
-      await axios.put(`${backendBaseUrl}/updateAddress/${selectedAddress.id}`, editFormData);
-      alert('Address updated successfully');
-      setSelectedAddress(null); 
+      const url = selectedAddress
+        ? `${backendBaseUrl}/updateAddress/${selectedAddress.id}` // For updating
+        : `${backendBaseUrl}/createAddress`; // For adding new address
+
+      const method = selectedAddress ? 'put' : 'post';
+      
+      // Send the form data to the backend
+      await axios[method](url, formData);
+
+      alert(`Address ${selectedAddress ? 'updated' : 'added'} successfully`);
+      setSelectedAddress(null);
       setEditFormData({});
-      // Refetch addresses after update
+      setIsModalOpen(false);
+
+      // Refetch addresses after successful addition or update
       const response = await axios.get(`${backendBaseUrl}/addresses/${userId}`);
       setAddresses(response.data.addresses);
     } catch (err) {
-      console.error('Error updating address:', err);
-      alert('Failed to update address');
+      console.error('Error saving address:', err);
+      alert('Failed to save address');
     }
   };
 
@@ -83,86 +109,111 @@ const AddressList: React.FC = () => {
     }
   };
 
+  // Close modal handler
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedAddress(null);
+    setEditFormData({});
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
+
+  const addressTypes = ['Home', 'Billing', 'Shipping'];
 
   return (
     <div className="container mx-auto p-6">
       <h2 className="text-3xl font-semibold mb-5">User Addresses</h2>
 
-      <div className="flex space-x-6">
-        {/* Address List Section */}
-        <div className="w-1/2">
-          {addresses.length === 0 ? (
-            <div className="text-xl text-gray-500">No address available</div>
-          ) : (
-            <div className="space-y-6">
-              {addresses.map((address) => (
-                <div key={address.id} className="border p-4 rounded-lg shadow-sm hover:shadow-lg">
-                  <h3 className="text-xl font-semibold text-blue-600 mb-3">{address.address_type}</h3>
-                  <p className="text-md text-gray-700"><strong>Street 1:</strong> {address.street1}</p>
-                  <p className="text-md text-gray-700"><strong>Street 2:</strong> {address.street2 || '-'}</p>
-                  <p className="text-md text-gray-700"><strong>City:</strong> {address.city}</p>
-                  <p className="text-md text-gray-700"><strong>State:</strong> {address.state}</p>
-                  <p className="text-md text-gray-700"><strong>Zip:</strong> {address.zip}</p>
-                  <p className="text-md text-gray-700"><strong>Country:</strong> {address.country}</p>
+      <div className="space-y-8">
+        {/* Loop through each address type (Home, Billing, Shipping) */}
+        {addressTypes.map((addressType) => {
+          const existingAddress = addresses.find((address) => address.address_type === addressType);
+          
+          return (
+            <div key={addressType}>
+              
+              {/* Show Add Address Button only if no address exists for that type */}
+              {!existingAddress && (
+                <button
+                  className="bg-green-500 text-white p-2 rounded w-44 mb-4"
+                  onClick={() => handleAddEditClick(addressType, null)} // Pass null for new address
+                >
+                  Add {addressType} Address
+                </button>
+              )}
+              
+              {/* Address List for the current address type */}
+              {existingAddress && (
+                <div key={existingAddress.id} className="border p-4 rounded-lg shadow-sm hover:shadow-lg">
+                  <h4 className="text-xl font-semibold text-blue-600 mb-3">{existingAddress.address_type} Address</h4>
+                  <p className="text-md text-gray-700"><strong>Street 1:</strong> {existingAddress.street1}</p>
+                  <p className="text-md text-gray-700"><strong>Street 2:</strong> {existingAddress.street2 || '-'}</p>
+                  <p className="text-md text-gray-700"><strong>City:</strong> {existingAddress.city}</p>
+                  <p className="text-md text-gray-700"><strong>State:</strong> {existingAddress.state}</p>
+                  <p className="text-md text-gray-700"><strong>Zip:</strong> {existingAddress.zip}</p>
+                  <p className="text-md text-gray-700"><strong>Country:</strong> {existingAddress.country}</p>
                   <div className="flex space-x-2 mt-2">
                     <button
                       className="bg-blue-500 text-white p-2 rounded w-44"
-                      onClick={() => handleEditClick(address)}
+                      onClick={() => handleAddEditClick(existingAddress.address_type, existingAddress)}
                     >
                       Edit
                     </button>
                     <button
                       className="bg-red-500 text-white p-2 rounded w-44"
-                      onClick={() => handleDeleteClick(address.id)}
+                      onClick={() => handleDeleteClick(existingAddress.id)}
                     >
                       Delete
                     </button>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
-          )}
-        </div>
-
-        {/* Edit Form Section */}
-        <div className="w-1/2">
-          {selectedAddress && (
-            <div className="p-6 border border-gray-200 rounded-lg shadow-md">
-              <h3 className="text-2xl font-semibold mb-4">Edit Address</h3>
-              <form onSubmit={handleEditFormSubmit}>
-                {['street1', 'street2', 'city', 'state', 'zip', 'country'].map((field) => (
-                  <div key={field} className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700">{field.replace(/^\w/, (c) => c.toUpperCase())}</label>
-                    <input
-                      type="text"
-                      name={field}
-                      value={editFormData[field] || ''}
-                      onChange={handleEditFormChange}
-                      className="border border-black p-4 rounded-xl w-full"
-                      required
-                    />
-                  </div>
-                ))}
-                <button
-                  type="submit"
-                  className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg"
-                >
-                  Update Address
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedAddress(null)}
-                  className="mt-2 w-full bg-gray-300 text-black py-2 px-4 rounded-lg"
-                >
-                  Cancel
-                </button>
-              </form>
-            </div>
-          )}
-        </div>
+          );
+        })}
       </div>
+
+      {/* Modal for Editing or Adding Address */}
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
+            <h3 className="text-lg font-semibold mb-4">
+              {selectedAddress ? 'Edit Address' : `Add ${currentAddressType} Address`}
+            </h3>
+            <form onSubmit={handleEditFormSubmit}>
+              {['street1', 'street2', 'city', 'state', 'zip', 'country'].map((field) => (
+                <div key={field} className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    {field.replace(/^\w/, (c) => c.toUpperCase())}
+                  </label>
+                  <input
+                    type="text"
+                    name={field}
+                    value={editFormData[field] || ''}
+                    onChange={handleEditFormChange}
+                    className="border border-black p-2.5 rounded-xl w-full"
+                    required
+                  />
+                </div>
+              ))}
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg"
+              >
+                {selectedAddress ? 'Update Address' : 'Add Address'}
+              </button>
+            </form>
+            <button
+              type="button"
+              onClick={handleCloseModal}
+              className="mt-4 w-full bg-gray-500 text-white py-2 px-4 rounded-lg"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

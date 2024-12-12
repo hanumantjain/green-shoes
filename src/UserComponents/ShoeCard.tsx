@@ -1,25 +1,41 @@
-import React from 'react'
+import React from 'react';
 
 interface ShoeCardProps {
-    image: string,
-    title: string,
-    description: string,
-    color: string,
-    price:number
-}
-const ShoeCard:React.FC<ShoeCardProps> = ({image, title, description, color, price}) => {
-  return (
-    <div className='overflow-hidden cursor-pointer hover:border-2 hover:border-white'>
-        <img src={image} alt={title}
-        className='w-full object-contain' />
-        <div className="p-4">
-        <h2 className="text-lg font-bold">{title}</h2>
-        <p>{description}</p>
-        <p>{color}</p>
-        <p>$ {price}</p>
-      </div>
-    </div>
-  )
+  image: string;
+  title: string;
+  description: string;
+  color: string;
+  price: number | string;
+  discountedPrice: number | string;
 }
 
-export default ShoeCard
+const ShoeCard: React.FC<ShoeCardProps> = ({ image, title, description, color, price, discountedPrice }) => {
+  const isDiscounted = Number(discountedPrice) < Number(price);
+
+  return (
+    <div className="shoe-card border p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <img src={image} alt={title} className="w-full h-80 object-cover rounded-lg" />
+      <h2 className="text-xl font-bold mt-2">{title}</h2>
+      <p className="text-gray-600">{description}</p>
+      <p className="text-gray-800">Color: {color}</p>
+      <div className="mt-2">
+        {isDiscounted ? (
+          <div>
+            <span className="text-gray-500 line-through mr-2">
+              ${Number(price).toFixed(2)}
+            </span>
+            <span className="text-green-600 font-bold">
+              ${Number(discountedPrice).toFixed(2)}
+            </span>
+          </div>
+        ) : (
+          <span className="text-gray-800 font-bold">
+            ${Number(price).toFixed(2)}
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ShoeCard;
