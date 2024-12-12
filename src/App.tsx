@@ -26,7 +26,7 @@ import Checkout from "./UserPages/Checkout"
 import GuestCheckout from "./UserPages/GuestCheckout"
 import UserInfo from "./UserComponents/UserInfo"
 import AddressList from "./UserComponents/AddressList"
-import Promotion from "./AdminPages/Promotion"
+
 
 
 const App: React.FC = () => {

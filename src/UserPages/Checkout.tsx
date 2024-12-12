@@ -4,6 +4,14 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import PaymentDetailsPage from '../UserComponents/Payment';
 import { Navbar } from '../UserComponents/Navbar';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+
+const myString: string | undefined = process.env.STRIPE_PUBLISHABLE_KEY;
+const stripeKey: string = myString ?? "pk_test_51QSD2bE2VB1vZcjt0hBFEYRqeEXfPvQkl2iLWlAV4KXk3V5F3wnq1CDUKJTiJ4T7S565v69I664m87O43jXFSeVf00KPaMKvC2";
+
+// const stripeKey: string = process.env.STRIPE_PUBLISHABLE_KEY
+const stripePromise = loadStripe(stripeKey);
 
 const Checkout: React.FC = () => {
   const [addresses, setAddresses] = useState<any[]>([]);
@@ -201,7 +209,9 @@ const Checkout: React.FC = () => {
   <div className="flex gap-12 px-20 pt-10">
     {/* Payment Details Section */}
     <div className="w-1/2">
+    <Elements stripe={stripePromise}>
       <PaymentDetailsPage />
+    </Elements>
     </div>
 
     {/* Order Summary Section */}
