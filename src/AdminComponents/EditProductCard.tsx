@@ -24,6 +24,13 @@ const EditProductCard: React.FC<EditProductCardProps> = ({ product, allSizes, on
         setQuantities(sizeQuantities)
     }, [product])
 
+    const handleQuantityChange = (sizeLabel: string, value: string) => {
+        setQuantities({
+            ...quantities,
+            [sizeLabel]: parseInt(value) || 0,
+        });
+    };
+
     const handleSave = () => {
         const updatedProduct = {
             ...product,
@@ -110,6 +117,22 @@ const EditProductCard: React.FC<EditProductCardProps> = ({ product, allSizes, on
                         </div>
                     </div>
                     <div className="mb-4">
+                        <label className="block text-sm font-medium">Sizes and Stock Quantities</label>
+                        <div className="grid grid-cols-3 gap-4">
+                            {allSizes.map((size) => (
+                                <div key={size.size_id} className="flex items-center gap-5 mb-2">
+                                    <span className="text-sm font-medium ">{size.size_label}</span>
+                                    <input
+                                        type="number"
+                                        value={quantities[size.size_label] || ''}
+                                        onChange={(e) => handleQuantityChange(size.size_label, e.target.value)}
+                                        className="w-full p-2 border rounded"
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className="mb-4">
                         <button
                             type="button"
                             onClick={handleSave}
@@ -131,4 +154,4 @@ const EditProductCard: React.FC<EditProductCardProps> = ({ product, allSizes, on
     )
 }
 
-export default EditProductCard
+export default EditProductCard;

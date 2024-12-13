@@ -3,12 +3,15 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { Navbar } from '../UserComponents/Navbar';
-
+import { useNavigate } from 'react-router-dom';
 
 const GuestCheckout = () => {
   const userId = useSelector((state: RootState) => state.user.userId);
   const totalAmount = useSelector((state: RootState) => state.cart.totalAmount)
   const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL;
+  const navigate = useNavigate()
+  const cartItems = useSelector((state: RootState) => state.cart.items)
+  
 
   const [formData, setFormData] = useState({
     personalInfo: {
@@ -43,6 +46,7 @@ const GuestCheckout = () => {
 
   const [useShippingAsBilling, setUseShippingAsBilling] = useState(true);
   const [showBillingAddressForm, setShowBillingAddressForm] = useState(false);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -75,17 +79,50 @@ const GuestCheckout = () => {
     }
   };
 
+  const validateInput = (): boolean => {
+    const errors: Record<string, string> = {};
+    const { personalInfo, address, billingAddress, paymentDetails } = formData;
+
+    // Personal Info Validation
+    if (!/^[a-zA-Z]+$/.test(personalInfo.firstName)) errors.firstName = "Invalid first name.";
+    if (!/^[a-zA-Z]+$/.test(personalInfo.lastName)) errors.lastName = "Invalid last name.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(personalInfo.email)) errors.email = "Invalid email.";
+    if (!/^\d{10,15}$/.test(personalInfo.phoneNumber)) errors.phoneNumber = "Invalid phone number.";
+
+    // Address Validation
+    const addressFields = useShippingAsBilling ? address : billingAddress;
+    for (const [key, value] of Object.entries(addressFields)) {
+      if (!value.trim()) errors[key] = `Address field \"${key}\" is required.`;
+    }
+    if (!/^[0-9]+$/.test(addressFields.zip)) errors.zip = "ZIP code must be numeric.";
+
+    // Payment Details Validation
+    if (!/^\d{16}$/.test(paymentDetails.cardNumber)) errors.cardNumber = "Invalid card number.";
+    if (!/^\d{2}\/\d{4}$/.test(paymentDetails.expiry)) errors.expiry = "Invalid expiry date format.";
+    if (new Date(paymentDetails.expiry) < new Date()) errors.expiry = "Card expiry date is in the past.";
+    if (!/^\d{3,4}$/.test(paymentDetails.cvv)) errors.cvv = "Invalid CVV.";
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    if (!validateInput()) return;
+
     const dataToSubmit = {
-      user_id: userId,
       ...formData,
       billingAddress: useShippingAsBilling ? formData.address : formData.billingAddress,
-    };
+    }
 
     try {
       await axios.post(`${backendBaseUrl}/submitAllDetails`, dataToSubmit);
-      alert('All information saved successfully');
+      if(cartItems.length > 0){
+        await axios.post(`${backendBaseUrl}/removeSize`, cartItems)
+      }
+      localStorage.removeItem('guestCart')
+      navigate('/orderConfirm')
     } catch (error) {
       console.error('Failed to save information:', error);
       alert('Failed to save information');
@@ -96,7 +133,7 @@ const GuestCheckout = () => {
     <div>
         <Navbar />
     <div className="w-full max-w-7xl mx-auto px-8 py-10 flex gap-12">
-  {/* Left Side: Sticky Cart */}
+
   <div className="w-1/3 sticky top-20 h-fit">
     <div>
     <h1 className="text-xl pt-20 pb-5 font-bold text-center">Order Summary</h1>
@@ -105,8 +142,8 @@ const GuestCheckout = () => {
             <h1>${totalAmount}</h1>
           </div>
           <div className="flex justify-between px-12">
-            <h1>Discount</h1>
-            <h1>${totalAmount}</h1>
+            <h1>Taxes</h1>
+            <h1>$0</h1>
           </div>
           <div className="flex justify-between px-12">
             <h1>Delivery Fee</h1>
@@ -120,10 +157,10 @@ const GuestCheckout = () => {
     </div>
   </div>
 
-  {/* Right Side: Form Content */}
+
   <div className="w-2/3">
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-      {/* Personal Information */}
+
       <div>
         <h2 className="text-2xl font-semibold pb-4">Personal Information</h2>
         <div className="flex gap-4 pb-4">
@@ -139,6 +176,7 @@ const GuestCheckout = () => {
                 onChange={(e) => handleInputChange(e, 'personalInfo')}
                 required
               />
+              {formErrors[field] && <span className="text-red-500 text-sm">{formErrors[field]}</span>}
             </div>
           ))}
         </div>
@@ -154,6 +192,7 @@ const GuestCheckout = () => {
               onChange={(e) => handleInputChange(e, 'personalInfo')}
               required
             />
+             {formErrors[field] && <span className="text-red-500 text-sm">{formErrors[field]}</span>}
           </div>
         ))}
       </div>
@@ -173,6 +212,7 @@ const GuestCheckout = () => {
         onChange={(e) => handleInputChange(e, 'address')}
         required
       />
+       {formErrors[field] && <span className="text-red-500 text-sm">{formErrors[field]}</span>}
     </div>
   ))}
 
@@ -189,6 +229,7 @@ const GuestCheckout = () => {
           onChange={(e) => handleInputChange(e, 'address')}
           required
         />
+         {formErrors[field] && <span className="text-red-500 text-sm">{formErrors[field]}</span>}
       </div>
     ))}
   </div>
@@ -206,6 +247,7 @@ const GuestCheckout = () => {
           onChange={(e) => handleInputChange(e, 'address')}
           required
         />
+         {formErrors[field] && <span className="text-red-500 text-sm">{formErrors[field]}</span>}
       </div>
     ))}
   </div>
@@ -246,6 +288,7 @@ const GuestCheckout = () => {
           onChange={(e) => handleInputChange(e, 'billingAddress')}
           required
         />
+         {formErrors[field] && <span className="text-red-500 text-sm">{formErrors[field]}</span>}
       </div>
     ))}
 
@@ -262,6 +305,7 @@ const GuestCheckout = () => {
             onChange={(e) => handleInputChange(e, 'billingAddress')}
             required
           />
+           {formErrors[field] && <span className="text-red-500 text-sm">{formErrors[field]}</span>}
         </div>
       ))}
     </div>
@@ -279,6 +323,7 @@ const GuestCheckout = () => {
             onChange={(e) => handleInputChange(e, 'billingAddress')}
             required
           />
+           {formErrors[field] && <span className="text-red-500 text-sm">{formErrors[field]}</span>}
         </div>
       ))}
     </div>
@@ -288,7 +333,7 @@ const GuestCheckout = () => {
 
 <div>
   <h2 className="text-2xl font-semibold pb-4">Payment Details</h2>
-  {(['cardNumber', 'cardName'] as const).map((field) => (
+  {/* {(['cardNumber', 'cardName'] as const).map((field) => (
     <div key={field} className="flex flex-col gap-2 text-sm pb-1">
       <label>{field.replace(/^\w/, (c) => c.toUpperCase())}</label>
       <input
@@ -300,35 +345,27 @@ const GuestCheckout = () => {
         onChange={(e) => handleInputChange(e, 'paymentDetails')}
         required
       />
+       {formErrors[field] && <span className="text-red-500 text-sm">{formErrors[field]}</span>}
+    </div>
+  ))} */}
+
+{(['cardNumber', 'cardName', 'expiry', 'cvv'] as const).map((field) => (
+    <div key={field} className="flex flex-col gap-2 text-sm pb-4">
+      <label>{field.replace(/^\w/, (c) => c.toUpperCase())}</label>
+      <input
+        type={field === 'cvv' || field === 'cardNumber' ? 'number' : 'text'}
+        name={field}
+        value={formData.paymentDetails[field]}
+        placeholder={`Enter ${field}`}
+        className={`border border-black p-3 rounded-xl w-full ${
+          formErrors[field] ? 'border-red-500' : ''
+        }`}
+        onChange={(e) => handleInputChange(e, 'paymentDetails')}
+        required
+      />
+      {formErrors[field] && <span className="text-red-500 text-sm">{formErrors[field]}</span>}
     </div>
   ))}
-
-  <div className="flex flex-row gap-4 text-sm pb-1">
-    <div className="flex flex-col gap-2 w-1/2">
-      <label>Expiry</label>
-      <input
-        type="text"
-        name="expiry"
-        value={formData.paymentDetails.expiry}
-        placeholder="MM/YYYY"
-        className="border border-black p-3 rounded-xl w-full"
-        onChange={(e) => handleInputChange(e, 'paymentDetails')}
-        required
-      />
-    </div>
-    <div className="flex flex-col gap-2 w-1/2">
-      <label>CVV</label>
-      <input
-        type="password"
-        name="cvv"
-        value={formData.paymentDetails.cvv}
-        placeholder="Enter CVV"
-        className="border border-black p-3 rounded-xl w-full"
-        onChange={(e) => handleInputChange(e, 'paymentDetails')}
-        required
-      />
-    </div>
-  </div>
 </div>
 
 

@@ -8,7 +8,7 @@ export const SignIn:React.FC = () => {
     const[userEmail, setUserEmail] = useState<string>('')
     const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL
     const navigate = useNavigate()
-    const dispatch = useDispatch();
+    const dispatch = useDispatch()
 
     const handleEmailSubmit = async (e: FormEvent) => {
         e.preventDefault()

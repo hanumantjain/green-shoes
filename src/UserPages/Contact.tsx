@@ -16,10 +16,11 @@ const Contact:React.FC = () => {
       //     message,
       //     email
       // })
+
       setName('')
       setMessage('')
       setEmail('')
-
+      alert('Complaint sent')
   }catch (error) {
       const axiosError = error as AxiosError<{ message: string }>;
       if (axiosError.response) {
@@ -67,7 +68,7 @@ const Contact:React.FC = () => {
                 rows={3}
             />
             <div className='pr-5'>
-                <button className='float-right border rounded-full p-2.5 px-5 border-black bg-black text-white'>Sign In</button>
+                <button className='float-right border rounded-full p-2.5 px-5 border-black bg-black text-white'>Send</button>
             </div>
           </form>
         </div>

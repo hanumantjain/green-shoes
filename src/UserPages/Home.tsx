@@ -1,6 +1,8 @@
 import React from 'react'
 import { Navbar } from '../UserComponents/Navbar'
 import homeShoe from '../assets/home-shoe.png'
+import { Link } from 'react-router-dom'
+
 
 export const Home:React.FC = () => {
   return (
@@ -18,10 +20,10 @@ export const Home:React.FC = () => {
                         Heels Collection</h1>
                     </div>
                     <div className=''>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Placeat quod at mollitia, ipsa deleniti libero eius, ut, autem modi quis saepe? Corrupti, vel quos veritatis consectetur ducimus totam. Ipsa, esse!</p>
+                        <p>Step into confidence with our latest collection designed exclusively for women. Whether you're chasing dreams or conquering the streets, our sneakers and heels bring together style, comfort, and elegance.</p>
                     </div>
                     <div>
-                        <button className='bg-white text-black p-3 px-8'>Shop Now</button>
+                        <Link to='/products' className='bg-white text-black p-3 px-8' >Shop Now</Link>
                     </div>
                 </div>
                 <div className='relative'>

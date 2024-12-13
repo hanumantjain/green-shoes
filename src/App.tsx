@@ -18,6 +18,7 @@ import AddAdmin from "./AdminComponents/AddAdmin"
 import AddProducts from "./AdminPages/AddProducts"
 import About from "./UserPages/About"
 import Cateorgy from "./AdminPages/Cateorgy"
+import Promotion from "./AdminPages/Promotion"
 import Contact from "./UserPages/Contact"
 import Orders from "./UserComponents/Orders"
 import Payment from "./UserComponents/Payment"
@@ -25,7 +26,8 @@ import Checkout from "./UserPages/Checkout"
 import GuestCheckout from "./UserPages/GuestCheckout"
 import UserInfo from "./UserComponents/UserInfo"
 import AddressList from "./UserComponents/AddressList"
-import Promotion from "./AdminPages/Promotion"
+import OrderConfirm from "./UserPages/OrderConfirm"
+
 
 
 const App: React.FC = () => {
@@ -73,9 +75,10 @@ const App: React.FC = () => {
             <Route path='/profile' element={<Profile />}>
               <Route index element={<UserInfo />}/>
               <Route path='orders' element={<Orders />}/>
-              <Route path='payment' element={<Payment />}/>
+              <Route path='payment' element={<Payment setPaymentDetailsAvailable={() => {}} />}/>
               <Route path="add" element={<AddressList />} />
             </Route>
+            <Route path='/orderConfirm' element={<OrderConfirm />}></Route>
 
 
             {/* Admin Routes */}
@@ -87,7 +90,7 @@ const App: React.FC = () => {
             }/>
             <Route path="/addAdmin" element={
               <AdminPrivateRoute isAuthencticated={isAdminAuthencticated}>
-                <AddAdmin />
+                <AddAdmin onLogOut={handleAdminLogOut}/>
               </AdminPrivateRoute>
             }/>
             <Route path="/addProducts" element={

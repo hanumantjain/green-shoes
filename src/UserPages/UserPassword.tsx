@@ -25,25 +25,42 @@ export const UserPassword: React.FC = () => {
     const handleEmailSubmit = async (e: FormEvent) => {
         e.preventDefault();
         try {
-            const response = await axiosInstance.post(`${backendBaseUrl}/userLogin`, {
+            // Login request
+            const loginResponse = await axiosInstance.post(`${backendBaseUrl}/userLogin`, {
                 userEmail,
                 userPassword,
             });
-            if (response.status === 200) {
+
+            if (loginResponse.status === 200) {
+                // Dispatch user data (e.g., firstName and userId)
                 dispatch(
                     setUser({
-                        firstName: response.data.firstName,
-                        userId: response.data.userId,
+                        firstName: loginResponse.data.firstName,
+                        userId: loginResponse.data.userId,
                     })
-                )
-                dispatch(fetchCartItems())
+                );
+                dispatch(fetchCartItems());
+
+                // Create Stripe Customer after successful login
+                const customerResponse = await axiosInstance.post(`${backendBaseUrl}/createCustomer`, {
+                    userEmail,
+                });
+
+                if (customerResponse.status === 200) {
+                    console.log('Stripe customer created:', customerResponse.data);
+                    // You can store the customer ID or any relevant info in your state or DB
+                } else {
+                    console.error('Error creating customer:', customerResponse.data);
+                }
+
+                // Redirect user to the home page after successful login and customer creation
                 navigate('/home', { replace: true });
             }
 
-            setResultMessage(response.data.message);
+            setResultMessage(loginResponse.data.message);
             setUserPassword('');
         } catch (error: any) {
-            console.error('Login Error:', error); // Log error for debugging
+            console.error('Login Error:', error);
 
             if (error.response) {
                 setResultMessage(
@@ -60,9 +77,10 @@ export const UserPassword: React.FC = () => {
     const handleShowPassword = () => {
         setShowPassword((prevState) => !prevState);
     };
+
     const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
         setUserPassword(e.target.value);
-    }
+    };
 
     return (
         <div className="flex justify-center pt-20">

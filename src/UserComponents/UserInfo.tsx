@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 
@@ -22,6 +22,7 @@ const UserInfoPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>(''); // Error state for displaying inside modal
   const [newPassword, setNewPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
   const [currentPassword, setCurrentPassword] = useState<string>(''); // Added state for current password
@@ -59,6 +60,7 @@ const UserInfoPage: React.FC = () => {
       const { firstname, lastname, useremail, phonenumber } = updatedUserInfo;
 
       if (!firstname || !lastname || !useremail || !phonenumber) {
+        setErrorMessage('All fields are required!');
         return; // Ensure all fields are filled
       }
 
@@ -67,30 +69,46 @@ const UserInfoPage: React.FC = () => {
       setSuccessMessage('User info updated successfully!');
       setIsModalOpen(false); // Close modal after successful update
       fetchUserInfo(); // Refetch updated user details
+      setErrorMessage(''); // Clear error if update is successful
     } catch (err) {
       console.error('Error updating user info:', err);
+      setErrorMessage('Error updating user info');
     }
   };
 
   const handlePasswordChange = async () => {
     if (newPassword !== confirmPassword) {
-      alert("Passwords don't match!");
+      setErrorMessage("Passwords don't match!");
       return;
     }
-
+  
+    if (newPassword.length < 8) {
+      setErrorMessage('New password must be at least 8 characters long.');
+      return;
+    }
+  
     try {
-      await axios.put(`${backendBaseUrl}/user/${userId}/password`, {
+      const response = await axios.put(`${backendBaseUrl}/user/${userId}/password`, {
         password: currentPassword,  // Send the current password
         newPassword,
         confirmPassword,
       });
-      setSuccessMessage('Password updated successfully!');
+  
+      // If password update is successful
+      setSuccessMessage(response.data.message);
+      setErrorMessage(''); // Clear any previous errors
       setIsPasswordModalOpen(false); // Close password modal after successful update
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (err) {
-      console.error('Error updating password:', err);
+    } catch (err: unknown) {  // Type `err` as `unknown`
+      if (axios.isAxiosError(err)) {  // Use Axios's built-in method to check for AxiosError
+        // Handle errors from the backend
+        setErrorMessage(err.response?.data.error || 'Error updating password.');
+      } else {
+        // Handle network or server errors
+        setErrorMessage('An unexpected error occurred.');
+      }
     }
   };
 
@@ -102,6 +120,7 @@ const UserInfoPage: React.FC = () => {
       useremail: '',
       phonenumber: '',
     });
+    setErrorMessage(''); // Reset the error message when closing the modal
   };
 
   const closePasswordModal = () => {
@@ -109,6 +128,7 @@ const UserInfoPage: React.FC = () => {
     setCurrentPassword('');
     setNewPassword('');
     setConfirmPassword('');
+    setErrorMessage(''); // Reset error when closing the password modal
   };
 
   return (
@@ -149,6 +169,9 @@ const UserInfoPage: React.FC = () => {
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
             <h3 className="text-xl font-semibold">Update User Information</h3>
 
+            {/* Error Message Inside Modal */}
+            {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+
             <div className="flex flex-col gap-4 mt-4">
               <input
                 type="text"
@@ -174,14 +197,21 @@ const UserInfoPage: React.FC = () => {
                 value={updatedUserInfo.useremail}
                 onChange={handleInputChange}
               />
-              <input
-                type="text"
-                className="border border-black p-4 rounded-xl w-full"
-                placeholder="Phone Number"
-                name="phonenumber"
-                value={updatedUserInfo.phonenumber}
-                onChange={handleInputChange}
-              />
+              <div className="w-full h-full flex items-center border border-black rounded-xl">
+                <div className="flex items-center justify-center h-full px-4 border-black rounded-l-xl">
+                  <span className="text-xl pr-2">🇺🇸</span>
+                  <span className="text-lg font-semibold">+1</span>
+                </div>
+                <input
+                  type="text"
+                  name="phoneNumber"
+                  value={updatedUserInfo.phonenumber}
+                  placeholder="Enter your phone number"
+                  required
+                  className="flex-1 h-full p-4 outline-none rounded-r-xl"
+                  onChange={handleInputChange}
+                />
+              </div>
             </div>
 
             <div className="flex gap-4 mt-4">
@@ -207,6 +237,9 @@ const UserInfoPage: React.FC = () => {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
             <h3 className="text-xl font-semibold">Change Password</h3>
+
+            {/* Error Message Inside Modal */}
+            {errorMessage && <p className="text-red-500">{errorMessage}</p>}
 
             <div className="flex flex-col gap-4 mt-4">
               <input

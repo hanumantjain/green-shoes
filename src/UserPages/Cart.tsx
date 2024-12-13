@@ -47,6 +47,12 @@ const Cart: React.FC = () => {
     }
   };
 
+  const handleCheckoutClick = (e: React.MouseEvent) => {
+    if (cart.items.length === 0) {
+      e.preventDefault()
+    }
+  };
+
   return (
     <div>
       <Navbar />
@@ -90,7 +96,14 @@ const Cart: React.FC = () => {
             <h1>${cart.totalAmount}</h1>
           </div>
           <div className="flex justify-center items-center pt-5">
-          <Link to={checkoutRoute} className="bg-white px-12 py-2 rounded-full">Go to Checkout</Link>
+            {/* Conditionally disable the button if the cart is empty */}
+            <Link
+              to={checkoutRoute}
+              className={`bg-white px-12 py-2 rounded-full ${cart.items.length === 0 ? 'cursor-not-allowed opacity-50' : ''}`}
+              onClick={handleCheckoutClick} // Add onClick handler to prevent navigation if the cart is empty
+            >
+              Go to Checkout
+            </Link>
           </div>
         </div>
       </div>

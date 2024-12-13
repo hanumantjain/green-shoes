@@ -1,7 +1,12 @@
 import React, { useState, FormEvent } from 'react'
 import axios, { AxiosError } from 'axios'
+import { Navbar } from '../AdminComponents/Navbar';
 
-const AddAdmin: React.FC = () => {
+interface AddAdmin {
+    onLogOut: () => void;
+}
+
+const AddAdmin: React.FC<AddAdmin> = ({onLogOut}) => {
     const [name, setName] = useState<string>('')
     const [username, setUsername] = useState<string>('')
     const [password, setPassword] = useState<string>('')
@@ -32,6 +37,8 @@ const AddAdmin: React.FC = () => {
     }
 
     return (
+        <div>
+            <Navbar onLogOut={onLogOut} />
         <div className="flex justify-center items-center h-screen">
             <div className="flex flex-col gap-6 border border-black w-1/3 p-10 text-center rounded">
                 <div>Add Admin</div>
@@ -69,6 +76,7 @@ const AddAdmin: React.FC = () => {
                     </div>
                 </form>
             </div>
+        </div>
         </div>
     );
 };

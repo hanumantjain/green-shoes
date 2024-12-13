@@ -1,20 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import PaymentDetailsPage from '../UserComponents/Payment';
-import { Navbar } from '../UserComponents/Navbar';
+import { Navbar } from '../UserComponents/Navbar'
+import { clearCart } from '../Features/cart/CartSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Checkout: React.FC = () => {
   const [addresses, setAddresses] = useState<any[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<any | null>(null);
   const [editFormData, setEditFormData] = useState<any>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [paymentDetailsAvailable, setPaymentDetailsAvailable] = useState<boolean>(true);
   const [currentAddressType, setCurrentAddressType] = useState<string | null>(null);
   const backendBaseUrl: string | undefined = process.env.REACT_APP_BACKEND_BASEURL;
   const userId = useSelector((state: RootState) => state.user.userId);
   const totalAmount = useSelector((state: RootState) => state.cart.totalAmount)
   const cartItems = useSelector((state: RootState) => state.cart.items)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
 
   // Open the modal for either adding or editing an address
   const handleAddEditClick = (addressType: string, address: any | null) => {
@@ -24,7 +29,6 @@ const Checkout: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  // Handle changes in the address form
   const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEditFormData((prevState: any) => ({
@@ -33,17 +37,13 @@ const Checkout: React.FC = () => {
     }));
   };
 
-  // Handle form submission (add or edit address)
+
   const handleEditFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Make sure to include user_id in the form data before submitting
     const formData = {
       ...editFormData,
-      user_id: userId,  // Add user_id to the form data (use 'guest' for guest users)
-    };
-
-    // Validate that all required fields are filled in
+      user_id: userId, 
+    }
     if (!formData.street1 || !formData.city || !formData.state || !formData.zip || !formData.country) {
       alert('Please fill in all required fields.');
       return;
@@ -64,7 +64,6 @@ const Checkout: React.FC = () => {
       setEditFormData({});
       setIsModalOpen(false);
 
-      // Refetch addresses after successful addition or update
       if (userId) {
         const response = await axios.get(`${backendBaseUrl}/addresses/${userId}`);
         setAddresses(response.data.addresses);
@@ -75,14 +74,12 @@ const Checkout: React.FC = () => {
     }
   };
 
-  // Close the modal
   const handleCloseModal = () => {
     setSelectedAddress(null);
     setEditFormData({});
     setIsModalOpen(false);
   };
 
-  // Fetch addresses when the userId changes
   useEffect(() => {
     const fetchAddresses = async () => {
       try {
@@ -98,14 +95,12 @@ const Checkout: React.FC = () => {
     fetchAddresses();
   }, [userId, backendBaseUrl]);
 
-  // Get address by type (e.g., Home, Shipping, Billing)
   const getAddressByType = (type: string) => {
     return addresses.find((address) => address.address_type === type);
   };
 
-  const handleOrder = async () => {
+const handleOrder = async () => {
     try {
-      // Ensure userId and cartItems are valid
       if (!userId) {
         alert('User not logged in.');
         return;
@@ -115,42 +110,65 @@ const Checkout: React.FC = () => {
         return;
       }
   
-      // Ensure there's a shipping address
       const shippingAddress = getAddressByType('Shipping');
-      if (!shippingAddress) {
-        alert('Please add a shipping address before placing an order.');
+      const billingAddress = getAddressByType('Billing');
+      const homeAddress = getAddressByType('Home');
+  
+      if (!shippingAddress || !billingAddress || !homeAddress) {
+        alert('Please ensure all address types are added.');
         return;
       }
   
-      // Map cart items to order details
-      const orderDetails = cartItems.map((item: any) => ({
+      // Check payment details availability
+      if (!paymentDetailsAvailable) {
+        alert('Payment details are missing. Please add payment details.');
+        return;
+      }
+  
+      const orderDetails = cartItems.map((item) => ({
         user_id: userId,
         product_id: item.product_id,
+        name: item.name,
         size: item.size,
         quantity: item.quantity,
         order_time: new Date().toISOString(),
-        total_amount: totalAmount, // Could split this by item if needed
+        total_amount: totalAmount,
         shipping_address: shippingAddress,
       }));
   
-      // Log order details for debugging
-      console.log('Order details:', orderDetails);
-  
-      // Make API request to place the order
       const response = await axios.post(`${backendBaseUrl}/createOrder`, { orders: orderDetails });
   
       if (response.status === 201 || response.status === 200) {
-        alert('Order placed successfully!');
+        // Navigate to the 'Order Confirmation' page (or any other page you wish)
+        navigate('/orderConfirm'); // Change '/order-confirmation' to your desired route
+  
+        const removeCartResponse = await axios.post(`${backendBaseUrl}/removeCart`, {
+          user_id: userId,
+          cartItems: cartItems,  // cartItems is already an array of { product_id, size }
+        });
+  
+        if (removeCartResponse.status === 200) {
+          // Successfully removed cart items
+          console.log('Cart items removed successfully');
+        } else {
+          // Handle failure in removing cart items
+          console.error('Failed to remove cart items from the database');
+        }
+  
+        // Clear the cart after successful order placement
+        dispatch(clearCart());
+      } else if (response.data.error === 'Item is not in stock') {  // Check for the new error message
+        alert('Item is not in stock. Please reduce the quantity or remove the item from the cart.');
       } else {
         alert('Unexpected response from the server.');
         console.error('Server response:', response.data);
       }
     } catch (err) {
       console.error('Error placing order:', err);
-      alert('Failed to place order.');
+      alert('Item is not in stock.');
     }
   };
-  // Address Row Component for rendering each address row
+
   const AddressRow = ({ type }: { type: string }) => {
     const address = getAddressByType(type);
     return (
@@ -186,7 +204,7 @@ const Checkout: React.FC = () => {
 <div>
   <Navbar />
   {/* Shipping Section */}
-  <div className="flex flex-col px-20 pt-10 justify-center items-center">
+  <div className="flex flex-col px-20 pt-10 ">
     <div>
       <h1 className="text-3xl font-bold pl-4 text-center">Shipping</h1>
       <div className="flex gap-44">
@@ -201,7 +219,7 @@ const Checkout: React.FC = () => {
   <div className="flex gap-12 px-20 pt-10">
     {/* Payment Details Section */}
     <div className="w-1/2">
-      <PaymentDetailsPage />
+      <PaymentDetailsPage setPaymentDetailsAvailable={setPaymentDetailsAvailable}/>
     </div>
 
     {/* Order Summary Section */}
